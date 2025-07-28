@@ -15,12 +15,11 @@ module Soka
 
     # Performance-related configuration
     class PerformanceConfig
-      attr_accessor :max_iterations, :timeout, :parallel_tools
+      attr_accessor :max_iterations, :timeout
 
       def initialize
         @max_iterations = 10
         @timeout = 30
-        @parallel_tools = false
       end
     end
 
