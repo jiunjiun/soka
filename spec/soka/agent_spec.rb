@@ -264,9 +264,7 @@ RSpec.describe Soka::Agent do
     def create_agent_with_options
       test_agent_class.new(
         max_iterations: 20,
-        timeout: 120,
-        cache: true,
-        cache_ttl: 3600
+        timeout: 120
       )
     end
 
@@ -274,8 +272,6 @@ RSpec.describe Soka::Agent do
       aggregate_failures do
         expect(agent.instance_variable_get(:@max_iterations)).to eq(20)
         expect(agent.instance_variable_get(:@timeout)).to eq(120)
-        expect(agent.instance_variable_get(:@cache)).to be true
-        expect(agent.instance_variable_get(:@cache_ttl)).to eq(3600)
       end
     end
   end
@@ -358,17 +354,6 @@ RSpec.describe Soka::Agent do
           expect(result.successful?).to be false
           expect(result.error).to include('LLM request failed')
         end
-      end
-    end
-
-    context 'with caching enabled' do
-      let(:cached_agent) { test_agent_class.new(cache: true) }
-
-      it 'caches successful results' do
-        mock_llm_response(cached_agent)
-        first = cached_agent.run('cached query')
-        second = cached_agent.run('cached query')
-        expect(second.object_id).to eq(first.object_id)
       end
     end
   end

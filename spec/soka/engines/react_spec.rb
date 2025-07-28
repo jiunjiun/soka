@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'spec_helper'
+
 RSpec.describe Soka::Engines::React do
   let(:test_context) do
     memory = Soka::Memory.new
@@ -278,9 +280,10 @@ RSpec.describe Soka::Engines::React do
       end
 
       def expect_invalid_tool_handling(events, result)
-        observation = events.find { |e| e.type == :observation }
+        error_event = events.find { |e| e[:type] == :error }
         aggregate_failures do
-          expect(observation.content).to include("Tool 'unknown_tool' not found")
+          expect(error_event).not_to be_nil
+          expect(error_event[:content]).to include("Tool 'unknown_tool' not found")
           expect(result).to be_successful
         end
       end

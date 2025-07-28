@@ -4,6 +4,9 @@ require 'bundler/setup'
 require 'soka'
 require 'soka/test_helpers'
 
+# Ensure all files are loaded for standalone test execution
+Zeitwerk::Loader.eager_load_all
+
 # Require support files
 Dir[File.join(__dir__, 'support', '**', '*.rb')].each { |f| require f }
 
