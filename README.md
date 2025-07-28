@@ -1,436 +1,423 @@
 # Soka
 
 <p align="center">
-  <strong>基於 ReAct 模式的 Ruby AI Agent 框架</strong>
+  <strong>Ruby AI Agent Framework based on ReAct Pattern</strong>
 </p>
 
 <p align="center">
-  <a href="#特性">特性</a> •
-  <a href="#安裝">安裝</a> •
-  <a href="#快速開始">快速開始</a> •
-  <a href="#進階功能">進階功能</a> •
-  <a href="#api-文件">API 文件</a> •
-  <a href="#貢獻">貢獻</a>
+  <a href="#features">Features</a> •
+  <a href="#installation">Installation</a> •
+  <a href="#quick-start">Quick Start</a> •
+  <a href="#advanced-features">Advanced Features</a> •
+  <a href="#api-documentation">API Documentation</a> •
+  <a href="#examples">Examples</a> •
+  <a href="#contributing">Contributing</a>
 </p>
 
-Soka 是一個基於 ReAct (Reasoning and Acting) 模式的 Ruby AI Agent 框架，支援多種 AI 提供商，提供物件導向的工具系統和智慧記憶體管理。它讓你能夠快速建立智能代理，處理複雜的推理和行動任務。
+Soka is a Ruby AI Agent framework based on the ReAct (Reasoning and Acting) pattern, supporting multiple AI providers, offering an object-oriented tool system and intelligent memory management. It enables you to quickly build intelligent agents that handle complex reasoning and action tasks.
 
-## 特性
+## Features
 
-- 🤖 **多 AI 提供商支援**: Google Gemini、OpenAI、Anthropic
-- 🛠️ **物件導向工具系統**: 類似 Grape API 的參數定義和驗證
-- 🧠 **智慧記憶體管理**: 對話歷史和思考過程記錄
-- 🔄 **ReAct 推理模式**: 標籤化的思考-行動-觀察循環
-- ⚡ **靈活配置系統**: 全域和實例級別的配置選項
-- 🔁 **錯誤處理和重試**: 內建指數退避重試機制
-- 🧪 **測試友好**: 完整的測試輔助工具
-- 📝 **完整類型支援**: 使用 dry-rb 生態系統
-- 🚀 **模組化設計**: 易於擴展和維護
-- 💾 **內建快取機制**: 提升效能和節省成本
+- 🤖 **Multi AI Provider Support**: Google Gemini, OpenAI, Anthropic
+- 🛠️ **Object-Oriented Tool System**: Grape API-like parameter definition and validation
+- 🧠 **Intelligent Memory Management**: Conversation history and thought process recording
+- 🔄 **ReAct Reasoning Pattern**: Tagged thought-action-observation loop
+- ⚡ **Flexible Configuration System**: Global and instance-level configuration options
+- 🔁 **Error Handling and Retry**: Built-in exponential backoff retry mechanism
+- 🧪 **Test Friendly**: Complete test helper tools
+- 📝 **Full Type Support**: Using dry-rb ecosystem
+- 🚀 **Modular Design**: Easy to extend and maintain
+- 💾 **Built-in Caching Mechanism**: Improve performance and save costs
 
-## 安裝
+## Installation
 
-將以下內容加入你的 Gemfile：
+Add the following to your Gemfile:
 
 ```ruby
 gem 'soka'
 ```
 
-然後執行：
+Then execute:
 
 ```bash
 bundle install
 ```
 
-或者直接安裝：
+Or install directly:
 
 ```bash
 gem install soka
 ```
 
-## 快速開始
+## Quick Start
 
-### 1. 設定 API Key
+### 1. Set up API Key
 
 ```bash
-# 方法 1: 環境變數
+# Method 1: Environment variable
 export GEMINI_API_KEY="your-api-key"
 
-# 方法 2: 建立 .env 檔案
+# Method 2: Create .env file
 echo "GEMINI_API_KEY=your-api-key" > .env
 ```
 
-取得 API Key:
-- [Google AI Studio](https://makersuite.google.com/app/apikey) (Gemini)
+Get API Keys:
+- [Google AI Studio](https://aistudio.google.com/app/apikey)
 - [OpenAI Platform](https://platform.openai.com/api-keys)
-- [Anthropic Console](https://console.anthropic.com/)
+- [Anthropic Console](https://console.anthropic.com/settings/keys)
 
-### 2. 基本使用
+### 2. Basic Usage
 
 ```ruby
 require 'soka'
 
-# 建立簡單的時間工具
+# Create a simple time tool
 class TimeTool < Soka::AgentTool
   desc "Get current time"
-  
+
   def call
     Time.now.strftime('%Y-%m-%d %H:%M:%S')
   end
 end
 
-# 建立 Agent
+# Create Agent
 class SimpleAgent < Soka::Agent
   tool TimeTool
 end
 
-# 執行
+# Execute
 agent = SimpleAgent.new
-result = agent.run("現在幾點？")
+result = agent.run("What time is it?")
 puts result.final_answer
 ```
 
-### 3. 執行範例
+### 3. Run Examples
 
 ```bash
-# 測試基本功能（不需要 API key）
-ruby test_soka.rb
-
-# 執行完整範例（需要 API key）
-ruby examples/basic_example.rb
+# Run full example (API key required)
+ruby examples/1_basic.rb
 ```
 
-## 核心概念
+## Core Concepts
 
-### 全域配置
+### Global Configuration
 
 ```ruby
 Soka.setup do |config|
-  # AI 配置
+  # AI Configuration
   config.ai do |ai|
     ai.provider = :gemini  # :gemini, :openai, :anthropic
     ai.model = 'gemini-2.5-flash-lite'
     ai.api_key = ENV['GEMINI_API_KEY']
-    
-    # Fallback 機制：當主要提供商失敗時自動切換
-    ai.fallback_provider = :openai
-    ai.fallback_model = 'gpt-4-turbo'
-    ai.fallback_api_key = ENV['OPENAI_API_KEY']
   end
-  
-  # 效能配置
+
+  # Performance Configuration
   config.performance do |perf|
-    perf.max_iterations = 10      # ReAct 最大迭代次數
-    perf.timeout = 30             # API 調用超時（秒）
-    perf.parallel_tools = false   # 實驗性功能
+    perf.max_iterations = 10      # ReAct max iterations
+    perf.timeout = 30             # API call timeout (seconds)
   end
-  
-  # 預設工具
+
+  # Default tools
   config.tools = [SearchTool, TimeTool]
 end
 ```
 
-### 定義工具
+### Defining Tools
 
-工具是 Agent 可以使用的功能模組：
+Tools are functional modules that Agents can use:
 
 ```ruby
 class SearchTool < Soka::AgentTool
   desc "Search the web for information"
-  
+
   params do
     requires :query, String, desc: "The query to search for"
-    optional :location, String, desc: "Location context", default: "Taiwan"
-    
-    # 參數驗證
+    optional :location, String, desc: "Location context", default: "Global"
+
+    # Parameter validation
     validates :query, presence: true, length: { minimum: 1, maximum: 500 }
-    validates :location, inclusion: { in: %w[Taiwan Japan Korea US] }, allow_nil: true
+    validates :location, inclusion: { in: %w[Global US Europe Asia] }, allow_nil: true
   end
-  
-  def call(query:, location: "Taiwan")
-    # 實際搜尋邏輯
+
+  def call(query:, location: "Global")
+    # Actual search logic
     perform_search(query, location)
   rescue => e
     { error: e.message, tool: self.class.name }
   end
-  
+
   private
-  
+
   def perform_search(query, location)
-    # 這裡可以調用真實的搜尋 API
-    "搜尋 #{query} 在 #{location} 的結果..."
+    # Here you can call real search APIs
+    "Search results for #{query} in #{location}..."
   end
 end
 ```
 
-### 定義 Agent
+### Defining Agents
 
-Agent 是執行 ReAct 推理的主體：
+Agents are the entities that perform ReAct reasoning:
 
 ```ruby
 class WeatherAgent < Soka::Agent
-  # AI 設定（覆寫全域設定）
+  # AI settings (override global settings)
   provider :gemini
   model 'gemini-2.5-flash-lite'
   max_iterations 10
   timeout 30
-  
-  # 註冊工具
+
+  # Register tools
   tool SearchTool
   tool TimeTool
-  
-  # 條件式工具註冊
+
+  # Conditional tool registration
   tool CalculatorTool, if: -> { ENV['ENABLE_CALCULATOR'] == 'true' }
-  
-  # 批量註冊
+
+  # Batch registration
   tools SearchTool, TimeTool, WeatherTool
-  
-  # 自定義工具（函數式）
+
+  # Custom tool (functional) - requires description as second parameter
   tool :get_weather, "Get weather for a location"
-  
-  # 重試配置
-  retry_config do
-    max_retries 3
-    backoff_strategy :exponential  # :exponential, :linear, :constant
-    retry_on [Timeout::Error, Net::ReadTimeout]
-  end
-  
-  # 生命週期鉤子
+
+  # Lifecycle hooks
   before_action :track_action
   after_action :update_metrics
   on_error :handle_error
-  
+
   private
-  
+
+  # Method implementation for functional tool
+  # Note: This is currently experimental and not fully implemented
   def get_weather(location:)
-    "#{location} 目前是晴天，溫度 25°C"
+    "#{location} is currently sunny, temperature 25°C"
   end
-  
+
   def track_action(action)
-    # 追蹤動作執行
+    # Track action execution
     @action_count ||= 0
     @action_count += 1
   end
-  
+
   def update_metrics(result)
-    # 更新統計指標
+    # Update metrics
     # metrics.record(result)
   end
-  
+
   def handle_error(error, context)
-    # 處理錯誤
-    :continue  # 或 :stop 來中斷執行
+    # Handle errors
+    :continue  # or :stop to interrupt execution
   end
 end
 ```
 
-### 使用 Agent
+### Using Agents
 
-#### 區塊模式（即時回饋）
+#### Block Mode (Real-time Feedback)
 
-適合需要顯示執行過程的場景：
+Suitable for scenarios that need to display the execution process:
 
 ```ruby
 agent = WeatherAgent.new
 
-agent.run('今天台北的天氣如何？') do |event|
+agent.run('What is the weather in Tokyo today?') do |event|
   case event.type
   when :thought
-    puts "💭 思考: #{event.content}"
+    puts "💭 Thinking: #{event.content}"
   when :action
-    puts "🔧 行動: 使用工具 #{event.content[:tool]}"
+    puts "🔧 Action: Using tool #{event.content[:tool]}"
   when :observation
-    puts "👀 觀察: #{event.content}"
+    puts "👀 Observation: #{event.content}"
   when :final_answer
-    puts "✅ 答案: #{event.content}"
+    puts "✅ Answer: #{event.content}"
   when :error
-    puts "❌ 錯誤: #{event.content}"
+    puts "❌ Error: #{event.content}"
   end
 end
 ```
 
-#### 直接模式（取得結果）
+#### Direct Mode (Get Result)
 
-適合只需要最終結果的場景：
+Suitable for scenarios that only need the final result:
 
 ```ruby
 agent = WeatherAgent.new
-result = agent.run('今天台北的天氣如何？')
+result = agent.run('What is the weather in Tokyo today?')
 
-# 結果物件提供豐富的資訊
-puts result.final_answer      # 最終答案
-puts result.confidence_score  # 信心分數 (0.0-1.0)
-puts result.iterations       # 使用的迭代次數
+# Result object provides rich information
+puts result.final_answer      # Final answer
+puts result.confidence_score  # Confidence score (0.0-1.0)
+puts result.iterations       # Number of iterations used
 puts result.status          # :success, :failed, :timeout, :max_iterations_reached
-puts result.execution_time  # 執行時間（如果有記錄）
+puts result.execution_time  # Execution time (if recorded)
 
-# 檢查執行狀態
+# Check execution status
 if result.successful?
-  puts "成功：#{result.final_answer}"
+  puts "Success: #{result.final_answer}"
 elsif result.failed?
-  puts "失敗：#{result.error}"
+  puts "Failed: #{result.error}"
 elsif result.timeout?
-  puts "執行超時"
+  puts "Execution timeout"
 elsif result.max_iterations_reached?
-  puts "達到最大迭代次數"
+  puts "Max iterations reached"
 end
 ```
 
-### 記憶體管理
+### Memory Management
 
-#### 基本對話記憶體
+#### Basic Conversation Memory
 
 ```ruby
-# 初始化帶有歷史的 Agent
+# Initialize Agent with history
 memory = [
-  { role: 'user', content: '我叫小明' },
-  { role: 'assistant', content: '你好，小明！很高興認識你。' }
+  { role: 'user', content: 'My name is John' },
+  { role: 'assistant', content: 'Hello John! Nice to meet you.' }
 ]
 
 agent = WeatherAgent.new(memory: memory)
-result = agent.run('我的名字是什麼？')
-# => "你的名字是小明。"
+result = agent.run('What is my name?')
+# => "Your name is John."
 
-# 記憶體會自動更新
+# Memory updates automatically
 puts agent.memory
 # <Soka::Memory> [
-#   { role: 'user', content: '我叫小明' },
-#   { role: 'assistant', content: '你好，小明！很高興認識你。' },
-#   { role: 'user', content: '我的名字是什麼？' },
-#   { role: 'assistant', content: '你的名字是小明。' }
+#   { role: 'user', content: 'My name is John' },
+#   { role: 'assistant', content: 'Hello John! Nice to meet you.' },
+#   { role: 'user', content: 'What is my name?' },
+#   { role: 'assistant', content: 'Your name is John.' }
 # ]
 ```
 
-#### 思考過程記憶體
+#### Thought Process Memory
 
 ```ruby
-# 查看完整的思考過程
+# View complete thought process
 puts agent.thoughts_memory
 # <Soka::ThoughtsMemory> (3 sessions, 2 successful, 1 failed, avg confidence: 0.82, avg iterations: 2.3)
 
-# 取得特定 session 的詳細資訊
+# Get detailed information for specific session
 last_session = agent.thoughts_memory.last_session
-puts last_session[:thoughts]  # 所有思考步驟
-puts last_session[:confidence_score]  # 該次執行的信心分數
+puts last_session[:thoughts]  # All thinking steps
+puts last_session[:confidence_score]  # Confidence score for that execution
 ```
 
-## 進階功能
+## Advanced Features
 
-### ReAct 流程格式
+### ReAct Flow Format
 
-Soka 使用標籤化的 ReAct 格式：
+Soka uses a tagged ReAct format:
 
 ```xml
-<Thought>我需要搜尋台北的天氣資訊</Thought>
+<Thought>I need to search for weather information in Tokyo</Thought>
 <Action>
 Tool: search
-Parameters: {"query": "台北天氣", "location": "Taiwan"}
+Parameters: {"query": "Tokyo weather", "location": "Japan"}
 </Action>
-<Observation>台北今天晴天，溫度 28°C，濕度 65%</Observation>
-<Thought>我已經獲得天氣資訊，可以回答使用者了</Thought>
-<Final_Answer>今天台北的天氣是晴天，溫度為 28°C，濕度為 65%。</Final_Answer>
+<Observation>Tokyo today: Sunny, temperature 28°C, humidity 65%</Observation>
+<Thought>I have obtained the weather information and can answer the user now</Thought>
+<Final_Answer>Today in Tokyo it's sunny with a temperature of 28°C and humidity of 65%.</Final_Answer>
 ```
 
-### 結果物件結構
+### Result Object Structure
 
 ```ruby
-# Result 物件屬性
-result.input            # 使用者輸入
-result.thoughts         # 思考步驟陣列
-result.final_answer     # 最終答案
-result.confidence_score # 信心分數 (0.0-1.0)
-result.status          # 狀態 (:success, :failed, :timeout, :max_iterations_reached)
-result.error           # 錯誤訊息（如果有）
-result.execution_time  # 執行時間（秒）
-result.iterations      # 迭代次數
+# Result object attributes
+result.input            # User input
+result.thoughts         # Array of thinking steps
+result.final_answer     # Final answer
+result.confidence_score # Confidence score (0.0-1.0)
+result.status          # Status (:success, :failed, :timeout, :max_iterations_reached)
+result.error           # Error message (if any)
+result.execution_time  # Execution time (seconds)
+result.iterations      # Number of iterations
 
-# 完整結構
+# Complete structure
 {
-  input: "使用者輸入",
+  input: "User input",
   thoughts: [
     {
       step: 1,
-      thought: "思考內容",
+      thought: "Thinking content",
       action: { tool: "search", params: { query: "..." } },
-      observation: "觀察結果"
+      observation: "Observation result"
     }
   ],
-  final_answer: "最終答案",
-  confidence_score: 0.85,  # 基於迭代次數計算
+  final_answer: "Final answer",
+  confidence_score: 0.85,  # Calculated based on iterations
   status: :success,        # :success, :failed, :timeout, :max_iterations_reached
-  error: nil,             # 錯誤訊息（如果有）
-  execution_time: 1.23,   # 執行時間（秒）
-  iterations: 2,          # 迭代次數
-  created_at: Time        # 建立時間
+  error: nil,             # Error message (if any)
+  execution_time: 1.23,   # Execution time (seconds)
+  iterations: 2,          # Number of iterations
+  created_at: Time        # Creation time
 }
 ```
 
-### 測試支援
+### Test Support
 
-Soka 提供完整的測試輔助工具：
+Soka provides complete test helper tools:
 
 ```ruby
 RSpec.describe WeatherAgent do
   include Soka::TestHelpers
-  
+
   it "answers weather questions" do
-    # Mock AI 回應
+    # Mock AI response
     mock_ai_response({
       thoughts: [
         {
           step: 1,
-          thought: "需要搜尋天氣資訊",
-          action: { tool: "search", params: { query: "台北天氣" } },
-          observation: "台北今天晴天"
+          thought: "Need to search for weather information",
+          action: { tool: "search", params: { query: "Tokyo weather" } },
+          observation: "Tokyo is sunny today"
         }
       ],
-      final_answer: "台北今天是晴天。"
+      final_answer: "Tokyo is sunny today."
     })
-    
-    # Mock 工具回應
-    mock_tool_response(SearchTool, "台北今天晴天")
-    
+
+    # Mock tool response
+    mock_tool_response(SearchTool, "Tokyo is sunny today")
+
     agent = described_class.new
-    result = agent.run("台北天氣如何？")
-    
+    result = agent.run("What's the weather in Tokyo?")
+
     expect(result).to be_successful
-    expect(result.final_answer).to include("晴天")
+    expect(result.final_answer).to include("sunny")
     expect(result).to have_thoughts_count(1)
     expect(result).to have_confidence_score_above(0.8)
   end
-  
+
   it "handles tool errors gracefully" do
-    allow_tool_to_fail(SearchTool, StandardError.new("API 錯誤"))
-    
+    allow_tool_to_fail(SearchTool, StandardError.new("API error"))
+
     agent = described_class.new
-    result = agent.run("搜尋測試")
-    
+    result = agent.run("Search test")
+
     expect(result).to be_failed
-    expect(result.error).to include("API 錯誤")
+    expect(result.error).to include("API error")
   end
 end
 ```
 
-### 自訂引擎
+### Custom Engines
 
-你可以實作自己的推理引擎：
+You can implement your own reasoning engine:
 
 ```ruby
 class CustomEngine < Soka::Engines::Base
   def reason(task, &block)
-    # 實作自定義推理邏輯
+    # Implement custom reasoning logic
     context = Soka::Engines::ReasoningContext.new(
       task: task,
       event_handler: block,
       max_iterations: max_iterations
     )
-    
-    # 使用 emit_event 發送事件
-    emit_event(:thought, "開始推理...", &block)
-    
-    # 執行推理...
-    
-    # 回傳結果（使用 Struct）
+
+    # Use emit_event to send events
+    emit_event(:thought, "Starting reasoning...", &block)
+
+    # Perform reasoning...
+
+    # Return result (using Struct)
     Soka::Engines::React::ReasonResult.new(
       input: task,
       thoughts: thoughts,
@@ -441,108 +428,164 @@ class CustomEngine < Soka::Engines::Base
   end
 end
 
-# 使用自訂引擎
+# Use custom engine
 agent = MyAgent.new(engine: CustomEngine)
 ```
 
-## API 文件
+## Examples
 
-### 支援的 AI 提供商
+The `examples/` directory contains several examples demonstrating different features of Soka, ordered from basic to advanced:
+
+### 1. Basic Example (`examples/1_basic.rb`)
+Demonstrates the fundamental usage of Soka with simple tools:
+- Creating basic tools (SearchTool, TimeTool)
+- Setting up an agent
+- Running queries with event handling
+- Direct result access
+
+### 2. Event Handling (`examples/2_event_handling.rb`)
+Shows how to handle real-time events during agent execution:
+- Event-based response handling
+- Different event types (thought, action, observation, final_answer)
+- Multi-step task processing
+- Direct result mode vs event mode
+
+### 3. Memory Management (`examples/3_memory.rb`)
+Illustrates memory features and conversation context:
+- Using Soka::Memory for conversation history
+- Array format for initial memory
+- Tool-based memory storage and recall
+- Accessing complete conversation history
+- Viewing thinking processes
+
+### 4. Lifecycle Hooks (`examples/4_hooks.rb`)
+Demonstrates lifecycle hooks for monitoring and control:
+- `before_action` for pre-processing
+- `after_action` for post-processing
+- `on_error` for error handling
+- Tracking agent activity and metrics
+
+### 5. Error Handling (`examples/5_error_handling.rb`)
+Shows robust error handling mechanisms:
+- Tool errors and agent-level errors
+- Using `on_error` hooks
+- Continuing execution after errors
+- Error result inspection
+
+### 6. Retry Mechanisms (`examples/6_retry.rb`)
+Demonstrates retry strategies for reliability:
+- Handling transient failures
+- Exponential backoff
+- Rate limiting scenarios
+- Configuring retry behavior
+
+### 7. Conditional Tools (`examples/7_tool_conditional.rb`)
+Shows dynamic tool loading based on conditions:
+- Environment-based tool loading
+- Role-based access control
+- Feature flag integration
+- Time-based availability
+
+### 8. Multi-Provider Support (`examples/8_multi_provider.rb`)
+Demonstrates using different AI providers:
+- Configuring Gemini, OpenAI, and Anthropic
+- Provider-specific features
+- Comparing outputs across models
+- Cost optimization strategies
+
+To run any example:
+```bash
+# Make sure you have the required API keys in your .env file
+ruby examples/1_basic.rb
+```
+
+## API Documentation
+
+### Supported AI Providers
 
 #### Google Gemini
-- 模型：`gemini-2.5-flash`, `gemini-2.5-flash-lite`, `gemini-pro`
-- 環境變數：`GEMINI_API_KEY`
-- 特點：快速回應，成本效益高
-- 預設模型：`gemini-2.5-flash-lite`
+- Models: `gemini-2.5-pro`, `gemini-2.5-flash`, `gemini-2.5-flash-lite`
+- Environment variable: `GEMINI_API_KEY`
+- Features: Fast response, cost-effective
+- Default model: `gemini-2.5-flash-lite`
 
 #### OpenAI
-- 模型：`gpt-4`, `gpt-4-turbo`, `gpt-3.5-turbo`
-- 環境變數：`OPENAI_API_KEY`
-- 特點：支援串流回應，強大的推理能力
+- Models: `gpt-4.1`, `gpt-4.1-mini`, `gpt-4.1-nano`
+- Environment variable: `OPENAI_API_KEY`
+- Features: Streaming support, powerful reasoning
 
 #### Anthropic
-- 模型：`claude-3-opus`, `claude-3-sonnet`, `claude-3-haiku`
-- 環境變數：`ANTHROPIC_API_KEY`
-- 特點：長上下文支援，優秀的程式碼理解
+- Models: `claude-opus-4-0`, `claude-sonnet-4-0`, `claude-3-5-haiku-latest`
+- Environment variable: `ANTHROPIC_API_KEY`
+- Features: Long context support, excellent code understanding
 
-### 配置選項
+### Configuration Options
 
-| 選項 | 類型 | 預設值 | 說明 |
-|------|------|--------|------|
-| `ai.provider` | Symbol | `:gemini` | AI 提供商 |
-| `ai.model` | String | `"gemini-2.5-flash-lite"` | 使用的模型 |
-| `ai.api_key` | String | nil | API 金鑰 |
-| `ai.fallback_provider` | Symbol | nil | 備用提供商 |
-| `performance.max_iterations` | Integer | 10 | 最大迭代次數 |
-| `performance.timeout` | Integer | 30 | 超時時間（秒） |
-| `performance.parallel_tools` | Boolean | false | 並行工具執行 |
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `ai.provider` | Symbol | `:gemini` | AI provider |
+| `ai.model` | String | `"gemini-2.5-flash-lite"` | Model to use |
+| `ai.api_key` | String | nil | API key |
+| `performance.max_iterations` | Integer | 10 | Max iterations |
+| `performance.timeout` | Integer | 30 | Timeout (seconds) |
 
-### 工具參數驗證
+### Tool Parameter Validation
 
-| 驗證器 | 選項 | 說明 |
-|--------|------|------|
-| `presence` | `true/false` | 值不能為空 |
-| `length` | `minimum`, `maximum` | 字串長度限制 |
-| `inclusion` | `in`, `allow_nil` | 值必須在指定列表中 |
-| `format` | `with` | 符合正則表達式 |
+| Validator | Options | Description |
+|-----------|---------|-------------|
+| `presence` | `true/false` | Value cannot be empty |
+| `length` | `minimum`, `maximum` | String length limits |
+| `inclusion` | `in`, `allow_nil` | Value must be in specified list |
+| `format` | `with` | Match regular expression |
 
-## 效能最佳化
+## Performance Optimization
 
-1. **使用適當的模型**：
-   - 簡單任務使用 `gemini-2.5-flash-lite` 或 `gpt-3.5-turbo`
-   - 複雜推理使用 `claude-4-sonnet` 或 `gpt-4`
+1. **Use appropriate models**:
+   - Simple tasks: `gemini-2.5-flash-lite` or `gpt-4.1-mini` or `claude-3-5-haiku-latest`
+   - Complex reasoning: `gemini-2.5-pro` or `gpt-4.1` or `claude-sonnet-4-0`
 
-2. **控制迭代次數**：
+2. **Control iterations**:
    ```ruby
-   agent = MyAgent.new(max_iterations: 5)  # 限制迭代次數
+   agent = MyAgent.new(max_iterations: 5)  # Limit iterations
    ```
 
-3. **使用快取機制**：
-   ```ruby
-   agent = MyAgent.new(cache: true, cache_ttl: 300)  # 5 分鐘快取
-   ```
 
-4. **工具並行執行**（實驗性）：
-   ```ruby
-   config.performance.parallel_tools = true
-   ```
+## Troubleshooting
 
-## 故障排除
+### Common Issues
 
-### 常見問題
-
-1. **API Key 錯誤**
+1. **API Key Error**
    ```
    Soka::LLMError: API key is required
    ```
-   解決：確保已設定正確的環境變數或在配置中提供 API key
+   Solution: Ensure correct environment variable is set or provide API key in configuration
 
-2. **超時錯誤**
+2. **Timeout Error**
    ```
    Soka::LLMError: Request timed out
    ```
-   解決：增加超時時間或使用更快的模型
+   Solution: Increase timeout or use a faster model
 
-3. **達到最大迭代次數**
+3. **Max Iterations Reached**
    ```
    Status: max_iterations_reached
    ```
-   解決：簡化問題或增加 `max_iterations`
+   Solution: Simplify the problem or increase `max_iterations`
 
-### 除錯技巧
+### Debugging Tips
 
 ```ruby
-# 調整最大迭代次數
+# Adjust max iterations
 Soka.configure do |c|
   c.performance.max_iterations = 20
 end
 
-# 使用區塊模式查看執行過程
+# Use block mode to see execution process
 agent.run(query) do |event|
-  p event  # 印出所有事件
+  p event  # Print all events
 end
 
-# 檢查思考過程
+# Inspect thought process
 result = agent.run(query)
 result.thoughts.each do |thought|
   puts "Step #{thought[:step]}: #{thought[:thought]}"
@@ -551,57 +594,57 @@ result.thoughts.each do |thought|
 end
 ```
 
-## 開發
+## Development
 
 ```bash
-# 安裝依賴
+# Install dependencies
 bundle install
 
-# 執行測試
+# Run tests
 bundle exec rspec
 
-# 執行 Rubocop
+# Run Rubocop
 bundle exec rubocop
 
-# 開啟互動式 console
+# Open interactive console
 bin/console
 
-# 建立新版本
-# 1. 更新 lib/soka/version.rb
-# 2. 更新 CHANGELOG.md
-# 3. 提交變更
-# 4. 建立標籤
+# Create new version
+# 1. Update lib/soka/version.rb
+# 2. Update CHANGELOG.md
+# 3. Commit changes
+# 4. Create tag
 bundle exec rake release
 ```
 
-## 貢獻
+## Contributing
 
-我們歡迎各種形式的貢獻！
+We welcome all forms of contributions!
 
-1. Fork 專案
-2. 建立功能分支 (`git checkout -b feature/amazing-feature`)
-3. 提交變更 (`git commit -m 'Add some amazing feature'`)
-4. 推送到分支 (`git push origin feature/amazing-feature`)
-5. 開啟 Pull Request
+1. Fork the project
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-請確保：
-- 添加適當的測試
-- 更新相關文件
-- 遵循現有的程式碼風格
-- 通過 Rubocop 檢查
+Please ensure:
+- Add appropriate tests
+- Update relevant documentation
+- Follow existing code style
+- Pass Rubocop checks
 
-## 授權
+## License
 
-本專案採用 MIT 授權條款。詳見 [LICENSE](LICENSE) 檔案。
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
-## 致謝
+## Acknowledgments
 
-- 感謝 [ReAct 論文](https://arxiv.org/abs/2210.03629) 提供的理論基礎
-- 感謝 [Regent](https://github.com/alextwoods/regent) 專案的架構啟發
-- 感謝所有貢獻者的付出
+- Thanks to the [ReAct paper](https://arxiv.org/abs/2210.03629) for the theoretical foundation
+- Thanks to the [Regent](https://github.com/alextwoods/regent) project for architectural inspiration
+- Thanks to all contributors for their efforts
 
 ---
 
 <p align="center">
-  用 ❤️ 在台灣製造
+  Made with ❤️ in Taiwan
 </p>
