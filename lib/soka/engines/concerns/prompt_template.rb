@@ -40,10 +40,11 @@ module Soka
             Important rules:
             1. Always start with a <Thought> to analyze the problem
             2. Use tools when you need information or to perform actions
-            3. Parameters must be valid JSON
-            4. NEVER include <Observation> tags - wait for the system to provide them
-            5. Provide a clear and complete <Final_Answer> when done
-            6. If you cannot complete the task, explain why in the <Final_Answer>
+            3. Parameters MUST be valid JSON format (e.g., {"query": "weather"} not {query: "weather"})
+            4. For tools without parameters, use empty JSON object: {}
+            5. NEVER include <Observation> tags - wait for the system to provide them
+            6. Provide a clear and complete <Final_Answer> when done
+            7. If you cannot complete the task, explain why in the <Final_Answer>
           INSTRUCTIONS
         end
 
@@ -108,9 +109,17 @@ module Soka
           { tool: tool_name, params: params }
         end
 
+        # Parse JSON parameters from action block
+        # @param params_json [String] The JSON string to parse
+        # @return [Hash] The parsed parameters as a hash with symbol keys
         def parse_json_params(params_json)
-          JSON.parse(params_json, symbolize_names: true)
-        rescue JSON::ParserError
+          # Clean up the JSON string - remove any trailing commas or whitespace
+          cleaned_json = params_json.strip.gsub(/,\s*}/, '}').gsub(/,\s*\]/, ']')
+          JSON.parse(cleaned_json, symbolize_names: true)
+        rescue JSON::ParserError => e
+          # Log the error for debugging but return empty hash to continue
+          warn "Failed to parse JSON parameters: #{e.message}"
+          warn "JSON string was: #{params_json}"
           {}
         end
 
