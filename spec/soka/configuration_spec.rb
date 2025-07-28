@@ -11,7 +11,6 @@ RSpec.describe Soka::Configuration do
       aggregate_failures do
         expect_ai_defaults(config.ai)
         expect_performance_defaults(config.performance)
-        expect_logging_defaults(config.logging)
         expect(config.tools).to eq([])
       end
     end
@@ -24,10 +23,6 @@ RSpec.describe Soka::Configuration do
     def expect_performance_defaults(perf_config)
       expect(perf_config.max_iterations).to eq(10)
       expect(perf_config.timeout).to eq(30)
-    end
-
-    def expect_logging_defaults(log_config)
-      expect(log_config.level).to eq(:info)
     end
   end
 

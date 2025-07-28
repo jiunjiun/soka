@@ -24,23 +24,11 @@ module Soka
       end
     end
 
-    # Logging configuration
-    class LoggingConfig
-      attr_accessor :level, :output, :format
-
-      def initialize
-        @level = :info
-        @output = $stdout
-        @format = :json
-      end
-    end
-
     attr_accessor :tools
 
     def initialize
       @ai = AIConfig.new
       @performance = PerformanceConfig.new
-      @logging = LoggingConfig.new
       @tools = []
     end
 
@@ -68,13 +56,6 @@ module Soka
     # @return [PerformanceConfig] The performance configuration
     def performance(&)
       block_given? ? configure(:performance, &) : @performance
-    end
-
-    # Access or configure logging settings
-    # @yield [LoggingConfig] Configuration block for logging settings
-    # @return [LoggingConfig] The logging configuration
-    def logging(&)
-      block_given? ? configure(:logging, &) : @logging
     end
   end
 end

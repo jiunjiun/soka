@@ -125,13 +125,6 @@ Soka.setup do |config|
     perf.parallel_tools = false   # 實驗性功能
   end
   
-  # 日誌配置
-  config.logging do |log|
-    log.level = :info
-    log.output = STDOUT
-    log.format = :json
-  end
-  
   # 預設工具
   config.tools = [SearchTool, TimeTool]
 end
@@ -203,7 +196,7 @@ class WeatherAgent < Soka::Agent
   end
   
   # 生命週期鉤子
-  before_action :log_action
+  before_action :track_action
   after_action :update_metrics
   on_error :handle_error
   
@@ -213,17 +206,19 @@ class WeatherAgent < Soka::Agent
     "#{location} 目前是晴天，溫度 25°C"
   end
   
-  def log_action(action)
-    logger.info "執行動作: #{action}"
+  def track_action(action)
+    # 追蹤動作執行
+    @action_count ||= 0
+    @action_count += 1
   end
   
   def update_metrics(result)
     # 更新統計指標
-    metrics.record(result)
+    # metrics.record(result)
   end
   
   def handle_error(error, context)
-    logger.error "錯誤: #{error.message}"
+    # 處理錯誤
     :continue  # 或 :stop 來中斷執行
   end
 end
@@ -481,9 +476,6 @@ agent = MyAgent.new(engine: CustomEngine)
 | `performance.max_iterations` | Integer | 10 | 最大迭代次數 |
 | `performance.timeout` | Integer | 30 | 超時時間（秒） |
 | `performance.parallel_tools` | Boolean | false | 並行工具執行 |
-| `logging.level` | Symbol | `:info` | 日誌級別 |
-| `logging.output` | IO | `$stdout` | 日誌輸出 |
-| `logging.format` | Symbol | `:json` | 日誌格式 |
 
 ### 工具參數驗證
 
@@ -540,9 +532,9 @@ agent = MyAgent.new(engine: CustomEngine)
 ### 除錯技巧
 
 ```ruby
-# 開啟詳細日誌
+# 調整最大迭代次數
 Soka.configure do |c|
-  c.logging.level = :debug
+  c.performance.max_iterations = 20
 end
 
 # 使用區塊模式查看執行過程

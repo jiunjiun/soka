@@ -116,10 +116,8 @@ module Soka
           # Clean up the JSON string - remove any trailing commas or whitespace
           cleaned_json = params_json.strip.gsub(/,\s*}/, '}').gsub(/,\s*\]/, ']')
           JSON.parse(cleaned_json, symbolize_names: true)
-        rescue JSON::ParserError => e
-          # Log the error for debugging but return empty hash to continue
-          warn "Failed to parse JSON parameters: #{e.message}"
-          warn "JSON string was: #{params_json}"
+        rescue JSON::ParserError
+          # Return empty hash to continue when JSON parsing fails
           {}
         end
 
