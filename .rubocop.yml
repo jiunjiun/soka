@@ -13,6 +13,9 @@ AllCops:
   TargetRubyVersion: 3.4
   SuggestExtensions: false
 
+  Exclude:
+    - 'examples/**/*'
+
 Gemspec/AddRuntimeDependency: # new in 1.65
   Enabled: true
 Gemspec/DeprecatedAttributeAssignment: # new in 1.30
