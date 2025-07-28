@@ -13,7 +13,8 @@ module Soka
     attr_reader :llm, :tools, :memory, :thoughts_memory, :engine
 
     # Initialize a new Agent instance
-    # @param memory [Memory, nil] The memory instance to use (defaults to new Memory)
+    # @param memory [Memory, Array, nil] The memory instance to use (defaults to new Memory)
+    #   Can be a Memory instance or an Array of message hashes
     # @param engine [Class] The engine class to use (defaults to Engine::React)
     # @param options [Hash] Configuration options
     # @option options [Integer] :max_iterations Maximum iterations for reasoning
@@ -24,7 +25,7 @@ module Soka
     # @option options [String] :model LLM model override
     # @option options [String] :api_key LLM API key override
     def initialize(memory: nil, engine: Engines::React, **options)
-      @memory = memory || Memory.new
+      @memory = initialize_memory(memory)
       @thoughts_memory = ThoughtsMemory.new
       @engine = engine
 
@@ -61,6 +62,22 @@ module Soka
     end
 
     private
+
+    # Initialize memory from various input formats
+    # @param memory [Memory, Array, nil] The memory input
+    # @return [Memory] The initialized memory instance
+    def initialize_memory(memory)
+      case memory
+      when Memory
+        memory
+      when Array
+        Memory.new(memory)
+      when nil
+        Memory.new
+      else
+        raise ArgumentError, "Invalid memory type: #{memory.class}. Expected Memory, Array, or nil"
+      end
+    end
 
     # Validate the input is not empty
     # @param input [String] The input to validate
