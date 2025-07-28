@@ -47,6 +47,9 @@ module Soka
       # @param retry_on [Array<Class>] Error classes to retry on
       # @return [Boolean] True if should retry
       def should_retry?(error, retry_on)
+        # Never retry ToolError - let it propagate immediately to on_error hook
+        return false if error.is_a?(Soka::ToolError)
+
         return true if retry_on.empty?
 
         retry_on.any? { |error_class| error.is_a?(error_class) }

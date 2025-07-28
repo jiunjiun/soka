@@ -51,20 +51,34 @@ module Soka
         # @param context [ReasoningContext] The reasoning context
         # @param action [Hash] The action that failed
         # @param content [String] The raw response content
+        # @raise [ToolError] Re-raises the error to trigger on_error hooks and terminate reasoning
         def handle_tool_error(error, context, action, content)
           error_message = "Tool error: #{error.message}"
           context.emit_event(:error, error_message)
+
+          # Add error as observation so AI can see what happened
           add_observation_to_messages(context, content, error_message)
           context.update_last_thought(action: action, observation: error_message)
+
+          # Re-raise the error to propagate to agent level
+          # This will trigger on_error hook and terminate the reasoning process
+          # If you want reasoning to continue after tool errors, comment out this line
+          # raise error
         end
 
+        # Execute a tool with the given name and input
+        # @param tool_name [String] The name of the tool to execute
+        # @param tool_input [Hash] The input parameters for the tool
+        # @return [String] The result of the tool execution
+        # @raise [ToolError] If the tool is not found or execution fails
         def execute_tool(tool_name, tool_input)
           tool = tools.find { |t| t.class.tool_name == tool_name }
-          return "Tool '#{tool_name}' not found" unless tool
+          raise ToolError, "Tool '#{tool_name}' not found" unless tool
 
           tool.call(**symbolize_keys(tool_input))
         rescue StandardError => e
-          "Error executing tool: #{e.message}"
+          # Re-raise as ToolError to be caught by process_action
+          raise ToolError, "Error executing tool: #{e.message}"
         end
 
         def symbolize_keys(hash)

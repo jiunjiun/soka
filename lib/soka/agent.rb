@@ -8,7 +8,6 @@ module Soka
     include Agents::HookManager
     include Agents::DSLMethods
     include Agents::LLMBuilder
-    include Agents::CacheHandler
 
     attr_reader :llm, :tools, :memory, :thoughts_memory, :engine
 
@@ -19,8 +18,6 @@ module Soka
     # @param options [Hash] Configuration options
     # @option options [Integer] :max_iterations Maximum iterations for reasoning
     # @option options [Integer] :timeout Timeout in seconds for operations
-    # @option options [Boolean] :cache Whether to enable caching
-    # @option options [Integer] :cache_ttl Cache time-to-live in seconds
     # @option options [Symbol] :provider LLM provider override
     # @option options [String] :model LLM model override
     # @option options [String] :api_key LLM API key override
@@ -40,10 +37,8 @@ module Soka
     # Apply configuration options with defaults
     # @param options [Hash] Configuration options
     def apply_configuration(options)
-      @max_iterations = options[:max_iterations] || self.class._max_iterations || 10
-      @timeout = options[:timeout] || self.class._timeout || 30
-      @cache = options[:cache] || false
-      @cache_ttl = options[:cache_ttl]
+      @max_iterations = options.fetch(:max_iterations) { self.class._max_iterations || 10 }
+      @timeout = options.fetch(:timeout) { self.class._timeout || 30 }
     end
 
     # Run the agent with the given input
@@ -52,8 +47,6 @@ module Soka
     # @return [Result] The result of the agent's reasoning
     def run(input, &)
       validate_input(input)
-      return check_cache(input) if cached_result_available?(input)
-
       execute_reasoning(input, &)
     rescue ArgumentError
       raise # Re-raise ArgumentError without handling
@@ -109,13 +102,12 @@ module Soka
       with_retry { engine_instance.reason(input, &) }
     end
 
-    # Finalize the result by updating memories and caching
+    # Finalize the result by updating memories and running hooks
     # @param input [String] The original input
     # @param result [Result] The result to finalize
     def finalize_result(input, result)
       update_memories(input, result)
       run_hooks(:after_action, result)
-      cache_result(input, result) if @cache
     end
 
     # Handle errors during execution
