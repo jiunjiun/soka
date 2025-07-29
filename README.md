@@ -646,5 +646,6 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 ---
 
 <p align="center">
-  Made with ❤️ in Taiwan
+  Made with ❤️ in Taiwan<br>
+  Created by <a href="https://claude.ai/code">Claude Code</a>
 </p>
