@@ -4,8 +4,6 @@ module Soka
   module LLMs
     # OpenAI (GPT) LLM provider implementation
     class OpenAI < Base
-      include Concerns::StreamingHandler
-
       ENV_KEY = 'OPENAI_API_KEY'
 
       private
@@ -43,12 +41,6 @@ module Soka
       rescue Faraday::Error => e
         handle_error(e)
       end
-
-      def supports_streaming?
-        true
-      end
-
-      # Streaming methods are in StreamingHandler module
 
       private
 
@@ -90,8 +82,6 @@ module Soka
           raw_response: body
         )
       end
-
-      # Stream processing methods are in StreamingHandler module
     end
   end
 end

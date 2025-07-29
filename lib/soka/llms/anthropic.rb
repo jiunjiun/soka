@@ -4,14 +4,12 @@ module Soka
   module LLMs
     # Anthropic (Claude) LLM provider implementation
     class Anthropic < Base
-      include Concerns::ResponseParser
-
       ENV_KEY = 'ANTHROPIC_API_KEY'
 
       private
 
       def default_model
-        'claude-4-sonnet'
+        'claude-sonnet-4-0'
       end
 
       def base_url
@@ -43,34 +41,6 @@ module Soka
         parse_response(response)
       rescue Faraday::Error => e
         handle_error(e)
-      end
-
-      def supports_streaming?
-        true
-      end
-
-      def streaming_chat(messages, **params, &)
-        request_params = build_streaming_params(messages, params)
-        execute_streaming_request(request_params, &)
-      rescue Faraday::Error => e
-        handle_error(e)
-      end
-
-      def build_streaming_params(messages, params)
-        request_params = build_request_params(messages, params)
-        request_params[:stream] = true
-        request_params
-      end
-
-      def execute_streaming_request(request_params, &)
-        connection.post('/v1/messages') do |req|
-          req.headers['x-api-key'] = api_key
-          req.headers['anthropic-version'] = options[:anthropic_version]
-          req.body = request_params
-          req.options.on_data = proc do |chunk, _overall_received_bytes|
-            process_stream_chunk(chunk, &)
-          end
-        end
       end
 
       private
@@ -118,7 +88,32 @@ module Soka
         end
       end
 
-      # Response parsing methods are in ResponseParser module
+      def parse_response(response)
+        body = response.body
+        validate_response_status(response.status, body)
+        build_result_from_response(body)
+      end
+
+      def validate_response_status(status, body)
+        return if status == 200
+
+        error_message = body.dig('error', 'message') || 'Unknown error'
+        raise LLMError, "Anthropic API error: #{error_message}"
+      end
+
+      def build_result_from_response(body)
+        content = body.dig('content', 0, 'text')
+        raise LLMError, 'No content in response' unless content
+
+        Result.new(
+          model: body['model'],
+          content: content,
+          input_tokens: body.dig('usage', 'input_tokens'),
+          output_tokens: body.dig('usage', 'output_tokens'),
+          finish_reason: body['stop_reason'],
+          raw_response: body
+        )
+      end
     end
   end
 end
