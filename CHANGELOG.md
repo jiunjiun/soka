@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.1] - 2025-07-29
+
+### Code Refactoring
+- refactor(llms): remove streaming support and response parser module (陳均均, 2025-07-29)
+
 ## [0.0.1.beta2] - 2025-07-29
 
 ### Chores
