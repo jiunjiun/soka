@@ -15,3 +15,5 @@ Gemfile.lock
 .idea/
 .vscode/
 .claude/
+REQUIREMENT.md
+SPEC.md
