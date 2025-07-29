@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
 
   spec.summary = 'A Ruby ReAct Agent Framework with multi-LLM support'
   spec.description = 'Soka is a Ruby framework for building AI agents using the ReAct (Reasoning and Acting) ' \
-                     'pattern. It supports multiple AI providers including Gemini Studio, OpenAI, and Anthropic.'
+                     'pattern. It supports multiple AI providers including Gemini AI Studio, OpenAI, and Anthropic.'
   spec.homepage = 'https://github.com/jiunjiun/soka'
   spec.required_ruby_version = '>= 3.4'
 
@@ -28,8 +28,7 @@ Gem::Specification.new do |spec|
         f.start_with?(*%w[bin/ test/ spec/ features/ .git appveyor Gemfile])
     end
   end
-  spec.bindir = 'exe'
-  spec.executables = spec.files.grep(%r{\Aexe/}) { |f| File.basename(f) }
+
   spec.require_paths = ['lib']
 
   # Runtime dependencies
