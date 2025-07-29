@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.1.beta2] - 2025-07-29
+
+### Chores
+- chore: update .gitignore to include new documentation files (e122098)
+
 ### Added
 - Initial release of Soka gem
 - Multi-LLM provider support (Gemini Studio, OpenAI, Anthropic)
