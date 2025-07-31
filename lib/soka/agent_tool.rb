@@ -123,7 +123,7 @@ module Soka
           'Float' => 'number', 'Numeric' => 'number',
           'TrueClass' => 'boolean', 'FalseClass' => 'boolean', 'Boolean' => 'boolean',
           'Array' => 'array',
-          'Hash' => 'object'
+          'Hash' => 'object', 'Object' => 'object'
         }.freeze
       end
     end
