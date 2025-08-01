@@ -54,10 +54,44 @@ jobs:
       env:
         GEM_HOST_API_KEY: "${{ secrets.RUBYGEMS_AUTH_TOKEN }}"
 
+    - name: Extract changelog for version
+      id: changelog
+      run: |
+        VERSION="${{ steps.version.outputs.VERSION }}"
+        echo "Extracting changelog for version $VERSION"
+
+        # Extract the changelog section for this version
+        awk -v version="$VERSION" '
+          /^## \[/ {
+            if (found) exit;
+            if ($2 == "["version"]") {
+              found = 1;
+              next;
+            }
+          }
+          found && /^## \[/ { exit }
+          found { print }
+        ' CHANGELOG.md > release_notes.md
+
+        # Check if we found content
+        if [ ! -s release_notes.md ]; then
+          echo "No changelog entry found for version $VERSION"
+          echo "No changelog entry found for this version." > release_notes.md
+        fi
+
+        # Add link to full changelog
+        echo "" >> release_notes.md
+        echo "---" >> release_notes.md
+        echo "" >> release_notes.md
+        echo "📝 **[View Full Changelog](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md)**" >> release_notes.md
+
+        echo "Release notes:"
+        cat release_notes.md
+
     - name: Create GitHub Release
       uses: softprops/action-gh-release@v1
       with:
-        generate_release_notes: true
+        body_path: release_notes.md
         files: |
           *.gem
       env:
