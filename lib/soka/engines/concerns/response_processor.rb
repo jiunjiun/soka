@@ -75,10 +75,7 @@ module Soka
           tool = tools.find { |t| t.class.tool_name == tool_name }
           raise ToolError, "Tool '#{tool_name}' not found" unless tool
 
-          tool.call(**symbolize_keys(tool_input))
-        rescue StandardError => e
-          # Re-raise as ToolError to be caught by process_action
-          raise ToolError, "Error executing tool: #{e.message}"
+          tool.execute(**symbolize_keys(tool_input))
         end
 
         def symbolize_keys(hash)
