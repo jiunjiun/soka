@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.2] - 2025-08-01
+
+### Features
+- feat(agent_tool): add support for 'Object' type mapping
+
+### Code Refactoring
+- refactor: remove dry-rb dependencies
+- refactor: change tool execution method from call to execute
+
+### Chores
+- chore: update gemspec description to include 'Gemini AI Studio'
+- chore(README): update footer to include creator information
+
 ## [0.0.1] - 2025-07-29
 
 ### Code Refactoring
