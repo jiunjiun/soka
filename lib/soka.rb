@@ -2,9 +2,6 @@
 
 require 'zeitwerk'
 require 'faraday'
-require 'dry-validation'
-require 'dry-struct'
-require 'dry-types'
 
 # Main module for the Soka ReAct Agent Framework
 # Provides AI agent capabilities with multiple LLM providers support

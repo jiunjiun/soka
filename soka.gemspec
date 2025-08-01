@@ -32,9 +32,6 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
 
   # Runtime dependencies
-  spec.add_dependency 'dry-struct', '~> 1.6'
-  spec.add_dependency 'dry-types', '~> 1.7'
-  spec.add_dependency 'dry-validation', '~> 1.10'
   spec.add_dependency 'faraday', '~> 2.0'
   spec.add_dependency 'zeitwerk', '~> 2.6'
 end
