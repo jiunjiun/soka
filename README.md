@@ -98,6 +98,67 @@ puts result.final_answer
 ruby examples/1_basic.rb
 ```
 
+## Rails Integration
+
+### Soka Rails
+
+For Rails applications, we provide a dedicated gem `soka-rails` that offers seamless integration with Rails conventions:
+
+```ruby
+# Gemfile
+gem 'soka-rails'
+```
+
+#### Features
+
+- 🚂 **Native Rails Integration**: Following Rails conventions and best practices
+- 📁 **Auto-loading Support**: Automatically loads the `app/soka` directory
+- 🛠️ **Generator Support**: Quickly generate Agent and Tool templates
+- ⚙️ **Rails Configuration Integration**: Uses Rails' configuration system
+- 🧪 **Rails Testing Integration**: Seamless integration with RSpec
+- 🔄 **Rails Lifecycle Hooks**: Integrates with Rails logging and error tracking
+
+#### Quick Setup
+
+```bash
+# Install the gem
+bundle add soka-rails
+
+# Run the installation generator
+rails generate soka:install
+
+# Generate an agent
+rails generate soka:agent customer_support
+
+# Generate a tool
+rails generate soka:tool order_lookup order_id:string
+```
+
+#### Basic Usage in Rails
+
+```ruby
+# app/soka/agents/customer_support_agent.rb
+class CustomerSupportAgent < ApplicationAgent
+  tool OrderLookupTool
+  tool UserInfoTool
+end
+
+# app/controllers/conversations_controller.rb
+class ConversationsController < ApplicationController
+  def create
+    agent = CustomerSupportAgent.new
+    result = agent.run(params[:message])
+    
+    render json: {
+      answer: result.final_answer,
+      confidence: result.confidence_score
+    }
+  end
+end
+```
+
+For more details, visit the [soka-rails repository](https://github.com/jiunjiun/soka-rails).
+
 ## Core Concepts
 
 ### Global Configuration
