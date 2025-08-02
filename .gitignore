@@ -17,3 +17,4 @@ Gemfile.lock
 .claude/
 REQUIREMENT.md
 SPEC.md
+.rspec_status
