@@ -340,9 +340,10 @@ RSpec.describe Soka::Agent do
       end
 
       def mock_event_responses(agent)
+        lang_detect = Soka::LLMs::Result.new(content: 'en')
         response1 = create_tool_response
         response2 = create_final_answer
-        allow(agent.llm).to receive(:chat).and_return(response1, response2)
+        allow(agent.llm).to receive(:chat).and_return(lang_detect, response1, response2)
       end
 
       def create_tool_response

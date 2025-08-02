@@ -2,7 +2,6 @@
 
 require 'bundler/setup'
 require 'soka'
-require 'soka/test_helpers'
 
 # Ensure all files are loaded for standalone test execution
 Zeitwerk::Loader.eager_load_all
@@ -11,10 +10,6 @@ Zeitwerk::Loader.eager_load_all
 Dir[File.join(__dir__, 'support', '**', '*.rb')].each { |f| require f }
 
 RSpec.configure do |config|
-  # Include test helpers
-  config.include Soka::TestHelpers
-  config.include Soka::TestHelpers::Matchers
-
   # Enable flags like --only-failures and --next-failure
   config.example_status_persistence_file_path = '.rspec_status'
 

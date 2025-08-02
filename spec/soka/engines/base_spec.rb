@@ -24,7 +24,9 @@ RSpec.describe Soka::Engines::Base do
   end
 
   let(:engine) do
-    described_class.new(test_context[:agent], test_context[:llm], test_context[:tools], test_context[:max_iterations])
+    described_class.new(test_context[:agent], test_context[:tools],
+                        llm: test_context[:llm],
+                        max_iterations: test_context[:max_iterations])
   end
 
   describe '#initialize' do
@@ -176,7 +178,9 @@ RSpec.describe Soka::Engines::Base do
 
     def create_engine_without_memory
       agent_without_memory = instance_double(Soka::Agent, memory: nil)
-      described_class.new(agent_without_memory, test_context[:llm], test_context[:tools], test_context[:max_iterations])
+      described_class.new(agent_without_memory, test_context[:tools],
+                          llm: test_context[:llm],
+                          max_iterations: test_context[:max_iterations])
     end
 
     def expect_no_memory_messages(messages)
@@ -244,8 +248,9 @@ RSpec.describe Soka::Engines::Base do
     end
 
     let(:custom_engine) do
-      custom_engine_class.new(test_context[:agent], test_context[:llm], test_context[:tools],
-                              test_context[:max_iterations])
+      custom_engine_class.new(test_context[:agent], test_context[:tools],
+                              llm: test_context[:llm],
+                              max_iterations: test_context[:max_iterations])
     end
 
     it 'allows subclass to implement reason' do

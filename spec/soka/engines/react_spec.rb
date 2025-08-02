@@ -41,23 +41,33 @@ RSpec.describe Soka::Engines::React do
   end
 
   let(:engine) do
-    described_class.new(test_context[:agent], test_context[:llm], test_context[:tools], test_context[:max_iterations])
+    described_class.new(test_context[:agent], test_context[:tools],
+                        llm: test_context[:llm],
+                        max_iterations: test_context[:max_iterations])
   end
 
   describe '#reason' do
     context 'with successful reasoning' do
       it 'returns success result with final answer' do
+        mock_calculator_tool
         mock_successful_reasoning(test_context[:llm])
         result = engine.reason('What is 2+2?')
-
         expect_successful_result(result)
       end
 
+      def mock_calculator_tool
+        calculator = test_context[:tools].find { |t| t.class.tool_name == 'calculator' }
+        allow(calculator).to receive(:execute).with(expression: '2+2').and_return('4')
+      end
+
       def mock_successful_reasoning(llm)
-        allow(llm).to receive(:chat).and_return(
+        # Use and_return with multiple values for sequential calls
+        responses = [
+          Soka::LLMs::Result.new(content: 'en'),  # Language detection
           create_calculator_response,
           create_final_answer_response
-        )
+        ]
+        allow(llm).to receive(:chat).and_return(*responses)
       end
 
       def create_calculator_response
@@ -120,17 +130,21 @@ RSpec.describe Soka::Engines::React do
       end
 
       def mock_multi_step_reasoning(llm)
-        allow(llm).to receive(:chat).and_return(
+        responses = [
+          Soka::LLMs::Result.new(content: 'en'),  # Language detection
           create_search_step,
           create_final_step
-        )
+        ]
+        allow(llm).to receive(:chat).and_return(*responses)
       end
 
       def create_search_step
         Soka::LLMs::Result.new(content: <<~STEP1)
           <Thought>I need to search for information first.</Thought>
-          <Action>search</Action>
-          <Action_Input>{"query": "complex topic"}</Action_Input>
+          <Action>
+          Tool: search
+          Parameters: {"query": "complex topic"}
+          </Action>
         STEP1
       end
 
@@ -160,13 +174,26 @@ RSpec.describe Soka::Engines::React do
       end
 
       def mock_no_final_answer(llm)
-        response = Soka::LLMs::Result.new(content: <<~THINKING)
-          <Thought>I'm still thinking about this...</Thought>
-          <Action>search</Action>
-          <Action_Input>{"query": "more info"}</Action_Input>
-        THINKING
+        thinking_response = create_thinking_response
+        responses = build_no_final_answer_responses(thinking_response)
+        allow(llm).to receive(:chat).and_return(*responses)
+      end
 
-        allow(llm).to receive(:chat).and_return(response)
+      def create_thinking_response
+        Soka::LLMs::Result.new(content: <<~THINKING)
+          <Thought>I'm still thinking about this...</Thought>
+          <Action>
+          Tool: search
+          Parameters: {"query": "more info"}
+          </Action>
+        THINKING
+      end
+
+      def build_no_final_answer_responses(thinking_response)
+        responses = []
+        responses << Soka::LLMs::Result.new(content: 'en') # Language detection
+        6.times { responses << thinking_response } # Return same response for all iterations
+        responses
       end
 
       def expect_max_iterations_result(result)
@@ -188,6 +215,7 @@ RSpec.describe Soka::Engines::React do
 
       def mock_calculator_action(llm)
         responses = [
+          Soka::LLMs::Result.new(content: 'en'),  # Language detection
           create_calc_action_response,
           create_calc_result_response
         ]
@@ -197,8 +225,10 @@ RSpec.describe Soka::Engines::React do
       def create_calc_action_response
         Soka::LLMs::Result.new(content: <<~CALC)
           <Thought>I need to multiply 10 by 5.</Thought>
-          <Action>calculator</Action>
-          <Action_Input>{"expression": "10 * 5"}</Action_Input>
+          <Action>
+          Tool: calculator
+          Parameters: {"expression": "10 * 5"}
+          </Action>
         CALC
       end
 
@@ -218,10 +248,12 @@ RSpec.describe Soka::Engines::React do
       end
 
       def mock_tool_error(llm)
-        allow(llm).to receive(:chat).and_return(
+        responses = [
+          Soka::LLMs::Result.new(content: 'en'),  # Language detection
           create_error_action,
           create_error_recovery
-        )
+        ]
+        allow(llm).to receive(:chat).and_return(*responses)
       end
 
       def create_error_action
@@ -257,10 +289,12 @@ RSpec.describe Soka::Engines::React do
       end
 
       def mock_invalid_tool(llm)
-        allow(llm).to receive(:chat).and_return(
+        responses = [
+          Soka::LLMs::Result.new(content: 'en'),  # Language detection
           create_invalid_tool_action,
           create_tool_recovery
-        )
+        ]
+        allow(llm).to receive(:chat).and_return(*responses)
       end
 
       def create_invalid_tool_action
@@ -298,10 +332,12 @@ RSpec.describe Soka::Engines::React do
       end
 
       def mock_malformed_response(llm)
-        allow(llm).to receive(:chat).and_return(
+        responses = [
+          Soka::LLMs::Result.new(content: 'en'),  # Language detection
           Soka::LLMs::Result.new(content: 'Just a plain response without tags'),
           Soka::LLMs::Result.new(content: '<Final_Answer>Fallback answer</Final_Answer>')
-        )
+        ]
+        allow(llm).to receive(:chat).and_return(*responses)
       end
 
       def expect_malformed_handling(result)
@@ -321,12 +357,14 @@ RSpec.describe Soka::Engines::React do
       end
 
       def mock_quick_answer(llm)
-        allow(llm).to receive(:chat).and_return(
+        responses = [
+          Soka::LLMs::Result.new(content: 'en'),  # Language detection
           Soka::LLMs::Result.new(content: <<~QUICK)
             <Thought>This is straightforward.</Thought>
             <Final_Answer>Quick answer</Final_Answer>
           QUICK
-        )
+        ]
+        allow(llm).to receive(:chat).and_return(*responses)
       end
 
       it 'calculates lower confidence for more iterations' do
@@ -337,9 +375,10 @@ RSpec.describe Soka::Engines::React do
       end
 
       def mock_lengthy_reasoning(llm)
-        responses = create_multiple_iterations
-        final_response = create_final_response
-        allow(llm).to receive(:chat).and_return(*responses, final_response)
+        responses = [Soka::LLMs::Result.new(content: 'en')] # Language detection
+        responses.concat(create_multiple_iterations)
+        responses << create_final_response
+        allow(llm).to receive(:chat).and_return(*responses)
       end
 
       def create_multiple_iterations
@@ -364,20 +403,23 @@ RSpec.describe Soka::Engines::React do
 
     context 'with custom instructions' do
       let(:engine_with_instructions) do
-        described_class.new(
-          test_context[:agent],
-          test_context[:llm],
-          test_context[:tools],
-          test_context[:max_iterations],
-          'You are a helpful assistant with custom behavior'
-        )
+        described_class.new(test_context[:agent], test_context[:tools],
+                            llm: test_context[:llm],
+                            max_iterations: test_context[:max_iterations],
+                            custom_instructions: 'You are a helpful assistant with custom behavior')
       end
       let(:messages_sent) { [] }
 
       before do
+        call_count = 0
         allow(test_context[:llm]).to receive(:chat) do |messages|
-          messages_sent.replace(messages)
-          Soka::LLMs::Result.new(content: '<Final_Answer>Test response</Final_Answer>')
+          call_count += 1
+          if call_count == 1 # Language detection
+            Soka::LLMs::Result.new(content: 'en')
+          else
+            messages_sent.replace(messages)
+            Soka::LLMs::Result.new(content: '<Final_Answer>Test response</Final_Answer>')
+          end
         end
       end
 
