@@ -8,17 +8,19 @@ module Soka
       # Event structure for emitting events
       Event = Struct.new(:type, :content)
 
-      attr_accessor :messages, :thoughts, :task, :iteration, :parsed_response
+      attr_accessor :messages, :thoughts, :task, :iteration, :parsed_response, :think_in
       attr_reader :event_handler, :max_iterations
 
       # Initialize a new reasoning context
       # @param task [String] The task to be processed
       # @param event_handler [Proc, nil] Optional block to handle events
       # @param max_iterations [Integer] Maximum number of reasoning iterations
-      def initialize(task:, event_handler: nil, max_iterations: 10)
+      # @param think_in [String, nil] The language to use for thinking
+      def initialize(task:, event_handler: nil, max_iterations: 10, think_in: nil)
         @task = task
         @event_handler = event_handler
         @max_iterations = max_iterations
+        @think_in = think_in
         @messages = []
         @thoughts = []
         @iteration = 0

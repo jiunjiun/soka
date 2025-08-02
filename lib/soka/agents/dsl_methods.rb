@@ -11,7 +11,7 @@ module Soka
       # Class methods for DSL
       module ClassMethods
         attr_accessor :_provider, :_model, :_api_key, :_max_iterations, :_timeout, :_tools, :_retry_config, :_hooks,
-                      :_instructions
+                      :_instructions, :_think_in
 
         def inherited(subclass)
           super
@@ -54,6 +54,12 @@ module Soka
         # @param text [String] The custom instructions/system prompt
         def instructions(text)
           @_instructions = text
+        end
+
+        # Define thinking language for the agent
+        # @param language [String] The language code (e.g., 'zh-TW', 'ja-JP', 'en')
+        def think_in(language)
+          @_think_in = language.to_s
         end
 
         # Register a tool for the agent

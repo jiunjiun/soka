@@ -43,8 +43,12 @@ module Soka
         end
 
         def format_instructions
+          thinking_instruction = build_thinking_instruction(think_in)
+
           <<~INSTRUCTIONS
             You must follow this exact format for each step:
+
+            #{thinking_instruction}
 
             <Thought>Your reasoning about what to do next</Thought>
             <Action>
@@ -52,6 +56,23 @@ module Soka
             Parameters: {"param1": "value1", "param2": "value2"}
             </Action>
 
+            #{action_format_rules}
+          INSTRUCTIONS
+        end
+
+        # Build thinking instruction based on language
+        # @param language [String, nil] The language to use for thinking
+        # @return [String] The thinking instruction
+        def build_thinking_instruction(language)
+          return '' unless language
+
+          "Use #{language} for your reasoning in <Thought> tags."
+        end
+
+        # Action format rules
+        # @return [String] The action format rules
+        def action_format_rules
+          <<~RULES
             STOP HERE after each Action. Do NOT include <Observation> in your response.
             The system will execute the tool and provide the observation.
 
@@ -67,7 +88,7 @@ module Soka
             5. NEVER include <Observation> tags - wait for the system to provide them
             6. Provide a clear and complete <Final_Answer> when done
             7. If you cannot complete the task, explain why in the <Final_Answer>
-          INSTRUCTIONS
+          RULES
         end
 
         def format_tools_description(tools)
@@ -93,58 +114,6 @@ module Soka
           end
 
           properties.join(', ')
-        end
-
-        def parse_response(text)
-          thoughts = extract_tagged_content(text, 'Thought')
-          actions = extract_actions(text)
-          final_answer = extract_tagged_content(text, 'Final_Answer').first
-
-          {
-            thoughts: thoughts,
-            actions: actions,
-            final_answer: final_answer
-          }
-        end
-
-        def extract_tagged_content(text, tag)
-          pattern = %r{<#{tag}>(.*?)</#{tag}>}m
-          text.scan(pattern).map { |match| match[0].strip }
-        end
-
-        def extract_actions(text)
-          action_blocks = text.scan(%r{<Action>(.*?)</Action>}m)
-          action_blocks.filter_map { |block| parse_action_block(block[0]) }
-        end
-
-        def parse_action_block(content)
-          content = content.strip
-          tool_match = content.match(/Tool:\s*(.+)/)
-          params_match = content.match(/Parameters:\s*(.+)/m)
-
-          return unless tool_match && params_match
-
-          tool_name = tool_match[1].strip
-          params_json = params_match[1].strip
-          params = parse_json_params(params_json)
-
-          { tool: tool_name, params: params }
-        end
-
-        # Parse JSON parameters from action block
-        # @param params_json [String] The JSON string to parse
-        # @return [Hash] The parsed parameters as a hash with symbol keys
-        def parse_json_params(params_json)
-          # Clean up the JSON string - remove any trailing commas or whitespace
-          cleaned_json = params_json.strip.gsub(/,\s*}/, '}').gsub(/,\s*\]/, ']')
-          JSON.parse(cleaned_json, symbolize_names: true)
-        rescue JSON::ParserError
-          # Return empty hash to continue when JSON parsing fails
-          {}
-        end
-
-        def format_observation(observation)
-          "<Observation>#{observation}</Observation>"
         end
       end
     end

@@ -4,14 +4,15 @@ module Soka
   module Engines
     # Base class for reasoning engines
     class Base
-      attr_reader :agent, :llm, :tools, :max_iterations, :custom_instructions
+      attr_reader :agent, :llm, :tools, :max_iterations, :custom_instructions, :think_in
 
-      def initialize(agent, llm, tools, max_iterations, custom_instructions = nil)
+      def initialize(agent, tools, **options)
         @agent = agent
-        @llm = llm
         @tools = tools
-        @max_iterations = max_iterations
-        @custom_instructions = custom_instructions
+        @llm = options[:llm]
+        @max_iterations = options[:max_iterations] || 10
+        @custom_instructions = options[:custom_instructions]
+        @think_in = options[:think_in]
       end
 
       def reason(task)

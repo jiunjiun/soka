@@ -8,6 +8,8 @@ module Soka
     class React < Base
       include Concerns::ResponseProcessor
       include Concerns::PromptTemplate
+      include Concerns::ResponseParser
+      include Concerns::ResultBuilder
 
       ReasonResult = Struct.new(:input, :thoughts, :final_answer, :status, :error, :confidence_score,
                                 keyword_init: true) do
@@ -21,7 +23,9 @@ module Soka
       # @yield [event] Optional block to handle events during execution
       # @return [ReasonResult] The result of the reasoning process
       def reason(task, &block)
-        context = ReasoningContext.new(task: task, event_handler: block, max_iterations: max_iterations)
+        determined_language = determine_thinking_language(task)
+        context = ReasoningContext.new(task: task, event_handler: block, max_iterations: max_iterations,
+                                       think_in: determined_language)
         context.messages = build_messages(task)
 
         result = iterate_reasoning(context)
@@ -55,6 +59,42 @@ module Soka
       end
 
       private
+
+      # Determine the language to use for thinking
+      # @param task [String] The input task
+      # @return [String, nil] The language to use for thinking
+      def determine_thinking_language(task)
+        return think_in if think_in
+
+        detect_language_from_input(task)
+      end
+
+      # Detect language from input using LLM
+      # @param task [String] The input text
+      # @return [String, nil] The detected language code
+      def detect_language_from_input(task)
+        return nil if task.nil? || task.empty?
+
+        messages = build_language_detection_messages(task)
+        response = llm.chat(messages)
+        response.content.strip
+      rescue StandardError
+        nil
+      end
+
+      # Build messages for language detection
+      # @param task [String] The input text
+      # @return [Array<Hash>] The messages for language detection
+      def build_language_detection_messages(task)
+        [
+          {
+            role: 'system',
+            content: 'Detect the language of the input. Reply with ONLY the language code: ' \
+                     'zh-TW, zh-CN, ja-JP, ko-KR, en, es, fr, de, pt-BR, etc.'
+          },
+          { role: 'user', content: task }
+        ]
+      end
 
       # Process a single iteration of reasoning
       # @param context [ReasoningContext] The reasoning context
@@ -105,31 +145,6 @@ module Soka
           final_answer: final_answer,
           status: :success
         )
-      end
-
-      def build_result(input:, thoughts:, final_answer:, status:, error: nil)
-        result = {
-          input: input,
-          thoughts: thoughts,
-          final_answer: final_answer,
-          status: status
-        }
-
-        result[:error] = error if error
-
-        # Calculate confidence score based on iterations and status
-        result[:confidence_score] = calculate_confidence_score(thoughts, status)
-
-        ReasonResult.new(**result)
-      end
-
-      def calculate_confidence_score(thoughts, status)
-        return 0.0 if status != :success
-
-        base_score = 0.85
-        iteration_penalty = thoughts.length * 0.05
-
-        [base_score - iteration_penalty, 0.5].max
       end
     end
   end
