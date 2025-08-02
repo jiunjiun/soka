@@ -5,8 +5,6 @@ module Soka
     module Concerns
       # Module for processing responses in ReAct engine
       module ResponseProcessor
-        include Concerns::PromptTemplate
-
         private
 
         # Process thoughts from parsed response
@@ -93,6 +91,10 @@ module Soka
             role: 'user',
             content: 'Please follow the exact format with <Thought>, <Action>, and <Final_Answer> tags.'
           )
+        end
+
+        def format_observation(observation)
+          "<Observation>#{observation}</Observation>"
         end
       end
     end
