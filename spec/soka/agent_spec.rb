@@ -133,6 +133,19 @@ RSpec.describe Soka::Agent do
     end
   end
 
+  describe '.instructions' do
+    it 'sets custom instructions' do
+      agent_class = create_agent_with_instructions
+      expect(agent_class._instructions).to eq('Custom system prompt')
+    end
+
+    def create_agent_with_instructions
+      Class.new(described_class) do
+        instructions 'Custom system prompt'
+      end
+    end
+  end
+
   describe '.retry_config' do
     it 'configures retry settings' do
       agent_class = create_agent_with_retry_config
@@ -273,6 +286,32 @@ RSpec.describe Soka::Agent do
         expect(agent.instance_variable_get(:@max_iterations)).to eq(20)
         expect(agent.instance_variable_get(:@timeout)).to eq(120)
       end
+    end
+
+    it 'accepts custom instructions at runtime' do
+      agent = test_agent_class.new(instructions: 'Runtime custom instructions')
+      expect(agent.instructions).to eq('Runtime custom instructions')
+    end
+
+    it 'uses class-level instructions when not provided at runtime' do
+      agent_class = create_agent_class_with_instructions('Class-level instructions')
+      agent = agent_class.new
+      expect(agent.instructions).to eq('Class-level instructions')
+    end
+
+    def create_agent_class_with_instructions(instruction_text)
+      Class.new(described_class) do
+        provider :gemini
+        model 'test-model'
+        api_key 'test-key'
+        instructions instruction_text
+      end
+    end
+
+    it 'overrides class-level instructions with runtime instructions' do
+      agent_class = create_agent_class_with_instructions('Class-level instructions')
+      agent = agent_class.new(instructions: 'Runtime instructions override')
+      expect(agent.instructions).to eq('Runtime instructions override')
     end
   end
 

@@ -8,10 +8,32 @@ module Soka
         private
 
         def system_prompt
+          # Use custom instructions if provided, otherwise use default ReAct prompt
+          if custom_instructions
+            combine_with_react_format(custom_instructions)
+          else
+            default_react_prompt
+          end
+        end
+
+        def default_react_prompt
           tools_description = format_tools_description(tools)
 
           <<~PROMPT
             You are an AI assistant that uses the ReAct (Reasoning and Acting) framework to solve problems step by step.
+
+            You have access to the following tools:
+            #{tools_description}
+
+            #{format_instructions}
+          PROMPT
+        end
+
+        def combine_with_react_format(instructions)
+          tools_description = format_tools_description(tools)
+
+          <<~PROMPT
+            #{instructions}
 
             You have access to the following tools:
             #{tools_description}

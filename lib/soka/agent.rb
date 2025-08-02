@@ -9,7 +9,7 @@ module Soka
     include Agents::DSLMethods
     include Agents::LLMBuilder
 
-    attr_reader :llm, :tools, :memory, :thoughts_memory, :engine
+    attr_reader :llm, :tools, :memory, :thoughts_memory, :engine, :instructions
 
     # Initialize a new Agent instance
     # @param memory [Memory, Array, nil] The memory instance to use (defaults to new Memory)
@@ -39,6 +39,7 @@ module Soka
     def apply_configuration(options)
       @max_iterations = options.fetch(:max_iterations) { self.class._max_iterations || 10 }
       @timeout = options.fetch(:timeout) { self.class._timeout || 30 }
+      @instructions = options.fetch(:instructions) { self.class._instructions }
     end
 
     # Run the agent with the given input
@@ -98,7 +99,7 @@ module Soka
     # @yield [event] Optional block to handle events
     # @return [EngineResult] The raw engine result
     def perform_reasoning(input, &)
-      engine_instance = @engine.new(self, @llm, @tools, @max_iterations)
+      engine_instance = @engine.new(self, @llm, @tools, @max_iterations, @instructions)
       with_retry { engine_instance.reason(input, &) }
     end
 

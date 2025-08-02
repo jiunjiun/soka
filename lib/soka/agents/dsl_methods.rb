@@ -10,7 +10,8 @@ module Soka
 
       # Class methods for DSL
       module ClassMethods
-        attr_accessor :_provider, :_model, :_api_key, :_max_iterations, :_timeout, :_tools, :_retry_config, :_hooks
+        attr_accessor :_provider, :_model, :_api_key, :_max_iterations, :_timeout, :_tools, :_retry_config, :_hooks,
+                      :_instructions
 
         def inherited(subclass)
           super
@@ -47,6 +48,12 @@ module Soka
         # @param duration [Integer] The timeout duration in seconds
         def timeout(duration)
           @_timeout = duration
+        end
+
+        # Define custom instructions (system prompt) for the agent
+        # @param text [String] The custom instructions/system prompt
+        def instructions(text)
+          @_instructions = text
         end
 
         # Register a tool for the agent
