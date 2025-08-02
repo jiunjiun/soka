@@ -94,7 +94,6 @@ RSpec.describe Soka::Engines::React do
 
       def expect_result_metadata(result)
         expect(result.thoughts).not_to be_empty
-        expect(result.confidence_score).to be > 0.5
       end
 
       it 'emits events during reasoning' do
@@ -200,7 +199,6 @@ RSpec.describe Soka::Engines::React do
         aggregate_failures do
           expect(result.status).to eq(:max_iterations_reached)
           expect(result.final_answer).to include("couldn't complete")
-          expect(result.confidence_score).to eq(0.0)
         end
       end
     end
@@ -353,7 +351,6 @@ RSpec.describe Soka::Engines::React do
         mock_quick_answer(test_context[:llm])
         result = engine.reason('Quick question')
 
-        expect(result.confidence_score).to be_within(0.01).of(0.8)
       end
 
       def mock_quick_answer(llm)
@@ -371,7 +368,6 @@ RSpec.describe Soka::Engines::React do
         mock_lengthy_reasoning(test_context[:llm])
         result = engine.reason('Complex question')
 
-        expect(result.confidence_score).to be < 0.7
       end
 
       def mock_lengthy_reasoning(llm)
@@ -477,7 +473,6 @@ RSpec.describe Soka::Engines::React do
         final_answer: 'answer',
         status: :success,
         error: nil,
-        confidence_score: 0.85
       )
     end
 
@@ -495,7 +490,6 @@ RSpec.describe Soka::Engines::React do
     def expect_result_status(result)
       expect(result.status).to eq(:success)
       expect(result.error).to be_nil
-      expect(result.confidence_score).to eq(0.85)
     end
   end
 end

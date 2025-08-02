@@ -13,7 +13,6 @@ RSpec.describe Soka::ThoughtsMemory do
       ],
       final_answer: '4',
       status: :success,
-      confidence_score: 0.95,
       execution_time: 0.5
     )
   end
@@ -26,7 +25,6 @@ RSpec.describe Soka::ThoughtsMemory do
       ],
       status: :failed,
       error: 'Unable to process query',
-      confidence_score: 0.2,
       execution_time: 1.2
     )
   end
@@ -51,7 +49,6 @@ RSpec.describe Soka::ThoughtsMemory do
         input: 'What is 2+2?',
         final_answer: '4',
         status: :success,
-        confidence_score: 0.95,
         timestamp: a_kind_of(Time)
       )
       expect(session[:thoughts].length).to eq(3)
@@ -68,7 +65,6 @@ RSpec.describe Soka::ThoughtsMemory do
         expect(session[:input]).to eq('Complex query')
         expect(session[:status]).to eq(:failed)
         expect(session[:error]).to eq('Unable to process query')
-        expect(session[:confidence_score]).to eq(0.2)
       end
     end
 
@@ -156,8 +152,7 @@ RSpec.describe Soka::ThoughtsMemory do
   def create_another_successful_result
     Soka::Result.new(
       final_answer: 'Another answer',
-      status: :success,
-      confidence_score: 0.85
+      status: :success
     )
   end
 
@@ -205,36 +200,6 @@ RSpec.describe Soka::ThoughtsMemory do
     end
   end
 
-  describe '#average_confidence_score' do
-    it 'calculates average for successful sessions' do
-      add_sessions_with_scores(memory)
-
-      expect(memory.average_confidence_score).to be_within(0.01).of(0.85)
-    end
-
-    def add_sessions_with_scores(memory)
-      memory.add('High confidence', create_result_with_score(0.95))
-      memory.add('Medium confidence', create_result_with_score(0.75))
-      memory.add('Failed', create_failed_result_with_score(0.2))
-    end
-
-    def create_result_with_score(score)
-      Soka::Result.new(status: :success, confidence_score: score)
-    end
-
-    def create_failed_result_with_score(score)
-      Soka::Result.new(status: :failed, confidence_score: score)
-    end
-
-    it 'returns 0.0 when no successful sessions' do
-      memory.add('Failed', failed_result)
-      expect(memory.average_confidence_score).to eq(0.0)
-    end
-
-    it 'returns 0.0 when empty' do
-      expect(memory.average_confidence_score).to eq(0.0)
-    end
-  end
 
   describe '#average_iterations' do
     it 'calculates average thought count' do
@@ -310,19 +275,12 @@ RSpec.describe Soka::ThoughtsMemory do
         total_sessions: 1,
         successful_sessions: 1,
         failed_sessions: 0,
-        average_confidence_score: 0.95,
         average_iterations: 3
       )
     end
   end
 
   describe 'edge cases' do
-    it 'handles nil confidence scores' do
-      result = Soka::Result.new(status: :success)
-      memory.add('No confidence', result)
-
-      expect(memory.average_confidence_score).to eq(0.0)
-    end
 
     it 'handles sessions with no thoughts' do
       result = Soka::Result.new(thoughts: nil, status: :success)

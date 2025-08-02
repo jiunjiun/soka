@@ -59,7 +59,6 @@ class HookedAgent < Soka::Agent
     puts "🟢 [AFTER] Request completed"
     puts "🟢 [AFTER] Final answer: #{result.final_answer[0..100]}..."
     puts "🟢 [AFTER] Iterations: #{result.iterations}"
-    puts "🟢 [AFTER] Confidence: #{(result.confidence_score * 100).round(1)}%"
     puts "🟢 [AFTER] Memory size: #{@memory.messages.size} messages"
   end
 

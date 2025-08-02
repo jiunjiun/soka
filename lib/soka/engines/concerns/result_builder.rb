@@ -17,19 +17,7 @@ module Soka
 
           result[:error] = error if error
 
-          # Calculate confidence score based on iterations and status
-          result[:confidence_score] = calculate_confidence_score(thoughts, status)
-
           Soka::Engines::React::ReasonResult.new(**result)
-        end
-
-        def calculate_confidence_score(thoughts, status)
-          return 0.0 if status != :success
-
-          base_score = 0.85
-          iteration_penalty = thoughts.length * 0.05
-
-          [base_score - iteration_penalty, 0.5].max
         end
       end
     end

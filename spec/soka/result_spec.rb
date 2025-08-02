@@ -20,7 +20,6 @@ RSpec.describe Soka::Result do
 
     def expect_default_outputs(result)
       expect(result.final_answer).to be_nil
-      expect(result.confidence_score).to eq(0.0)
     end
 
     def expect_default_metadata(result)
@@ -39,7 +38,6 @@ RSpec.describe Soka::Result do
         input: 'Test input',
         thoughts: [{ type: :thought, content: 'Thinking...' }],
         final_answer: 'The answer is 42',
-        confidence_score: 0.85,
         status: :success,
         execution_time: 1.5
       )
@@ -58,7 +56,6 @@ RSpec.describe Soka::Result do
 
     def expect_output_data(result)
       expect(result.final_answer).to eq('The answer is 42')
-      expect(result.confidence_score).to eq(0.85)
     end
 
     def expect_status_data(result)
@@ -161,7 +158,6 @@ RSpec.describe Soka::Result do
           { type: :thought, content: 'AI is artificial intelligence' }
         ],
         final_answer: 'AI stands for Artificial Intelligence',
-        confidence_score: 0.9,
         status: :success,
         execution_time: 0.75
       )
@@ -180,7 +176,6 @@ RSpec.describe Soka::Result do
     end
 
     def expect_hash_metrics(hash)
-      expect(hash[:confidence_score]).to eq(0.9)
       expect(hash[:execution_time]).to eq(0.75)
       expect(hash[:iterations]).to eq(1)
     end
@@ -302,7 +297,6 @@ RSpec.describe Soka::Result do
     def create_result_with_execution_details
       described_class.new(
         thoughts: [{ type: :thought }, { type: :action }],
-        confidence_score: 0.756,
         execution_time: 2.345,
         status: :success
       )
@@ -311,7 +305,6 @@ RSpec.describe Soka::Result do
     def expect_execution_details(details)
       aggregate_failures do
         expect(details[:iterations]).to eq(2)
-        expect(details[:confidence]).to eq('75.6%')
         expect(details[:time]).to eq('2.35s')
         expect(details[:status]).to eq(:success)
       end
@@ -331,14 +324,5 @@ RSpec.describe Soka::Result do
       expect(result.summary).to eq('Success: ')
     end
 
-    it 'handles zero confidence score' do
-      result = described_class.new(confidence_score: 0)
-      expect(result.execution_details[:confidence]).to eq('0.0%')
-    end
-
-    it 'handles perfect confidence score' do
-      result = described_class.new(confidence_score: 1.0)
-      expect(result.execution_details[:confidence]).to eq('100.0%')
-    end
   end
 end

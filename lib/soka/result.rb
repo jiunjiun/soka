@@ -3,14 +3,13 @@
 module Soka
   # Represents the result of an agent's reasoning process
   class Result
-    attr_reader :input, :thoughts, :final_answer, :confidence_score, :status, :error, :execution_time
+    attr_reader :input, :thoughts, :final_answer, :status, :error, :execution_time
 
     # Initialize a new Result instance
     # @param attributes [Hash] Result attributes
     # @option attributes [String] :input The original input
     # @option attributes [Array] :thoughts Array of thought objects
     # @option attributes [String] :final_answer The final answer
-    # @option attributes [Float] :confidence_score Confidence score (0.0-1.0)
     # @option attributes [Symbol] :status The result status
     # @option attributes [String] :error Error message if failed
     # @option attributes [Float] :execution_time Time taken in seconds
@@ -18,7 +17,6 @@ module Soka
       @input = attributes[:input]
       @thoughts = attributes[:thoughts] || []
       @final_answer = attributes[:final_answer]
-      @confidence_score = attributes[:confidence_score] || 0.0
       @status = attributes[:status] || :pending
       @error = attributes[:error]
       @execution_time = attributes[:execution_time]
@@ -82,7 +80,6 @@ module Soka
     def execution_details
       {
         iterations: iterations,
-        confidence: confidence_score ? format('%.1f%%', confidence_score * 100) : 'N/A',
         time: execution_time ? "#{execution_time.round(2)}s" : 'N/A',
         status: status
       }
@@ -99,7 +96,6 @@ module Soka
         input: input,
         thoughts: thoughts,
         final_answer: final_answer,
-        confidence_score: confidence_score,
         status: status
       }
     end

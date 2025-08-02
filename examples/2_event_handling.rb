@@ -109,7 +109,6 @@ puts '-' * 50
 
 result = agent.run('Calculate the area of a circle with radius 5')
 puts "Direct result: #{result.final_answer}"
-puts "Confidence: #{(result.confidence_score * 100).round(1)}%"
 puts "Iterations: #{result.iterations}"
 
 puts "\n=== Event Handling Benefits ==="

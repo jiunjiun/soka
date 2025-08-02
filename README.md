@@ -151,7 +151,7 @@ class ConversationsController < ApplicationController
     
     render json: {
       answer: result.final_answer,
-      confidence: result.confidence_score
+      status: result.status
     }
   end
 end
@@ -307,7 +307,6 @@ result = agent.run('What is the weather in Tokyo today?')
 
 # Result object provides rich information
 puts result.final_answer      # Final answer
-puts result.confidence_score  # Confidence score (0.0-1.0)
 puts result.iterations       # Number of iterations used
 puts result.status          # :success, :failed, :timeout, :max_iterations_reached
 puts result.execution_time  # Execution time (if recorded)
@@ -354,12 +353,12 @@ puts agent.memory
 ```ruby
 # View complete thought process
 puts agent.thoughts_memory
-# <Soka::ThoughtsMemory> (3 sessions, 2 successful, 1 failed, avg confidence: 0.82, avg iterations: 2.3)
+# <Soka::ThoughtsMemory> (3 sessions, 2 successful, 1 failed, avg iterations: 2.3)
 
 # Get detailed information for specific session
 last_session = agent.thoughts_memory.last_session
 puts last_session[:thoughts]  # All thinking steps
-puts last_session[:confidence_score]  # Confidence score for that execution
+puts last_session[:final_answer]  # Final answer for that execution
 ```
 
 ## Advanced Features
@@ -386,7 +385,6 @@ Parameters: {"query": "Tokyo weather", "location": "Japan"}
 result.input            # User input
 result.thoughts         # Array of thinking steps
 result.final_answer     # Final answer
-result.confidence_score # Confidence score (0.0-1.0)
 result.status          # Status (:success, :failed, :timeout, :max_iterations_reached)
 result.error           # Error message (if any)
 result.execution_time  # Execution time (seconds)
@@ -404,7 +402,6 @@ result.iterations      # Number of iterations
     }
   ],
   final_answer: "Final answer",
-  confidence_score: 0.85,  # Calculated based on iterations
   status: :success,        # :success, :failed, :timeout, :max_iterations_reached
   error: nil,             # Error message (if any)
   execution_time: 1.23,   # Execution time (seconds)
@@ -444,7 +441,7 @@ RSpec.describe WeatherAgent do
     expect(result).to be_successful
     expect(result.final_answer).to include("sunny")
     expect(result).to have_thoughts_count(1)
-    expect(result).to have_confidence_score_above(0.8)
+    expect(result.status).to eq(:success)
   end
 
   it "handles tool errors gracefully" do
@@ -483,8 +480,7 @@ class CustomEngine < Soka::Engines::Base
       input: task,
       thoughts: thoughts,
       final_answer: answer,
-      status: :success,
-      confidence_score: calculate_confidence_score(thoughts, :success)
+      status: :success
     )
   end
 end

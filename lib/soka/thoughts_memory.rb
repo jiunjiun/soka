@@ -15,7 +15,6 @@ module Soka
         thoughts: result.thoughts || [],
         final_answer: result.final_answer,
         status: result.status,
-        confidence_score: result.confidence_score,
         timestamp: Time.now
       }
 
@@ -52,14 +51,6 @@ module Soka
       @sessions.select { |s| s[:status] == :failed }
     end
 
-    def average_confidence_score
-      successful = successful_sessions
-      return 0.0 if successful.empty?
-
-      total = successful.sum { |s| s[:confidence_score] || 0.0 }
-      total / successful.size
-    end
-
     def average_iterations
       return 0 if @sessions.empty?
 
@@ -80,7 +71,6 @@ module Soka
         total: size,
         successful: successful_sessions.size,
         failed: failed_sessions.size,
-        avg_confidence: format('%.2f', average_confidence_score),
         avg_iterations: format('%.1f', average_iterations)
       }
     end
@@ -88,7 +78,6 @@ module Soka
     def format_stats_string(stats)
       "<Soka::ThoughtsMemory> (#{stats[:total]} sessions, " \
         "#{stats[:successful]} successful, #{stats[:failed]} failed, " \
-        "avg confidence: #{stats[:avg_confidence]}, " \
         "avg iterations: #{stats[:avg_iterations]})"
     end
 
@@ -103,7 +92,6 @@ module Soka
           total_sessions: size,
           successful_sessions: successful_sessions.size,
           failed_sessions: failed_sessions.size,
-          average_confidence_score: average_confidence_score,
           average_iterations: average_iterations
         }
       }
