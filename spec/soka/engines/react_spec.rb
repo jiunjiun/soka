@@ -361,6 +361,65 @@ RSpec.describe Soka::Engines::React do
         FINAL
       end
     end
+
+    context 'with custom instructions' do
+      let(:engine_with_instructions) do
+        described_class.new(
+          test_context[:agent],
+          test_context[:llm],
+          test_context[:tools],
+          test_context[:max_iterations],
+          'You are a helpful assistant with custom behavior'
+        )
+      end
+      let(:messages_sent) { [] }
+
+      before do
+        allow(test_context[:llm]).to receive(:chat) do |messages|
+          messages_sent.replace(messages)
+          Soka::LLMs::Result.new(content: '<Final_Answer>Test response</Final_Answer>')
+        end
+      end
+
+      it 'initializes with custom instructions' do
+        expect(engine_with_instructions.custom_instructions).to eq('You are a helpful assistant with custom behavior')
+      end
+
+      it 'includes custom instructions in system prompt' do
+        engine_with_instructions.reason('Test query')
+
+        system_message = messages_sent.find { |m| m[:role] == 'system' }
+        expect(system_message[:content]).to include('You are a helpful assistant with custom behavior')
+      end
+
+      it 'maintains standard ReAct format in system prompt' do
+        engine_with_instructions.reason('Test query')
+
+        system_message = messages_sent.find { |m| m[:role] == 'system' }
+        expect(system_message[:content]).to include('You have access to the following tools')
+      end
+
+      it 'includes exact format instruction in system prompt' do
+        engine_with_instructions.reason('Test query')
+
+        system_message = messages_sent.find { |m| m[:role] == 'system' }
+        expect(system_message[:content]).to include('You must follow this exact format')
+      end
+
+      it 'uses default instructions without custom ones' do
+        engine.reason('Test query')
+
+        system_message = messages_sent.find { |m| m[:role] == 'system' }
+        expect(system_message[:content]).to include('You are an AI assistant that uses the ReAct')
+      end
+
+      it 'does not include custom instructions when not specified' do
+        engine.reason('Test query')
+
+        system_message = messages_sent.find { |m| m[:role] == 'system' }
+        expect(system_message[:content]).not_to include('You are a helpful assistant with custom behavior')
+      end
+    end
   end
 
   describe 'ReasonResult struct' do
