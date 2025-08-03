@@ -7,6 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.3] - 2025-08-03
+
+### Features
+- feat: add think_in feature for multilingual reasoning (2e587f3)
+- feat: add custom instructions support for agents (95c2689)
+- feat: add think_in languages example (505ef60)
+
+### Code Refactoring
+- refactor: optimize think_in feature and improve security (4bcd026)
+- refactor: remove confidence score from result and related components (057cf93)
+- refactor: extract response parsing and result building into separate concerns (0d62388)
+
+### Tests
+- test: fix RSpec violations and restructure tests (17c1af7)
+- test: add RSpec test for think_in feature (759c113)
+- test: remove test_helpers module and update test files (2e587f3)
+
+### Documentation
+- docs: add documentation for custom instructions and multilingual thinking features (151e8e3)
+- docs: add Rails integration documentation (41815e6)
+
+### Chores
+- chore(release): add changelog extraction step for GitHub release (cbb65d8)
+- chore: add .rspec_status to gitignore (0a0ebb3)
+
 ## [0.0.2] - 2025-08-01
 
 ### Features
