@@ -9,6 +9,7 @@ gem 'irb'
 
 group :development do
   gem 'bundler', '~> 2.0'
+  gem 'dentaku', '~> 3.5'
   gem 'dotenv', '~> 3.0'
   gem 'pry', '~> 0.14'
   gem 'rake', '~> 13.0'

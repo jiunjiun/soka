@@ -4,15 +4,26 @@
 require 'bundler/setup'
 require 'soka'
 require 'dotenv/load'
+require 'dentaku'
 
 # Example 9: Custom Instructions (System Prompt)
+# 
+# This example demonstrates how to use custom instructions to change the Agent's
+# personality and response style while maintaining the ReAct reasoning pattern.
+# 
+# Key concepts:
+# - Custom instructions define the Agent's personality and style
+# - Instructions are automatically merged with the standard ReAct format
+# - Different styles can be achieved: poetic, business, educational, etc.
 
-# Poetic style assistant
+# Example 1: Poetic style assistant
+# Uses elegant language and artistic expressions while maintaining accuracy
 class PoeticAssistant < Soka::Agent
   provider :gemini
   model 'gemini-2.5-flash-lite'
 
-  # Custom instructions that will be combined with ReAct format
+  # Custom instructions define the agent's personality
+  # These will be combined with the standard ReAct format automatically
   instructions <<~INSTRUCTIONS
     You are a poetic AI assistant who answers questions with beautiful language.
     You must:
@@ -32,9 +43,8 @@ class PoeticAssistant < Soka::Agent
     end
 
     def call(expression:)
-      # rubocop:disable Security/Eval
-      result = eval(expression) # For demo purposes only
-      # rubocop:enable Security/Eval
+      calculator = Dentaku::Calculator.new
+      result = calculator.evaluate(expression)
       "The calculation reveals its truth like morning dew: #{expression} = #{result}"
     rescue StandardError => e
       "Alas, turbulence in the calculation: #{e.message}"
@@ -69,9 +79,8 @@ class BusinessAssistant < Soka::Agent
     end
 
     def call(expression:)
-      # rubocop:disable Security/Eval
-      result = eval(expression)
-      # rubocop:enable Security/Eval
+      calculator = Dentaku::Calculator.new
+      result = calculator.evaluate(expression)
       "Calculation result: #{expression} = #{result}"
     rescue StandardError => e
       "Calculation error: #{e.message}"
@@ -106,9 +115,8 @@ class KidsTeacher < Soka::Agent
     end
 
     def call(expression:)
-      # rubocop:disable Security/Eval
-      result = eval(expression)
-      # rubocop:enable Security/Eval
+      calculator = Dentaku::Calculator.new
+      result = calculator.evaluate(expression)
       "Wow! We figured it out! #{expression} = #{result} 🎉"
     rescue StandardError => e
       "Oops, there's something tricky about this problem: #{e.message}"
@@ -122,7 +130,7 @@ end
 puts '=== Poetic Assistant Example ==='
 poet = PoeticAssistant.new
 
-poet.run('Please calculate the golden ratio: (1 + 5**0.5) / 2') do |event|
+poet.run('Please calculate the golden ratio: (1 + 5^0.5) / 2') do |event|
   case event.type
   when :thought
     puts "🌸 Thoughts drift by: #{event.content}"

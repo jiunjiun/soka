@@ -25,16 +25,9 @@ RSpec.describe 'Think In Languages Feature', type: :feature do
     mock_llm
   end
 
-  def configure_mock_responses(mock_llm, agent, response_content)
-    if agent.think_in.nil?
-      allow(mock_llm).to receive(:chat).and_return(
-        create_mock_llm_result('en'), # Language detection response
-        create_mock_llm_result(response_content)
-      )
-    else
-      allow(mock_llm).to receive(:chat)
-        .and_return(create_mock_llm_result(response_content))
-    end
+  def configure_mock_responses(mock_llm, _agent, response_content)
+    allow(mock_llm).to receive(:chat)
+      .and_return(create_mock_llm_result(response_content))
   end
 
   let(:test_agent_class) do
@@ -106,20 +99,16 @@ RSpec.describe 'Think In Languages Feature', type: :feature do
 
     context 'when think_in not specified' do
       before do
-        # First call: language detection
+        # No language detection, just main reasoning
         allow(mock_llm).to receive(:chat)
-          .with(array_including(hash_including(content: /Detect the language/)))
-          .and_return(lang_response)
-        # Second call: main reasoning
-        allow(mock_llm).to receive(:chat)
-          .with(array_including(hash_including(role: 'user', content: '請幫我計算')))
+          .with(array_including(hash_including(role: 'user', content: 'Please help me calculate')))
           .and_return(main_response)
       end
 
-      it 'detects language from input' do
-        agent.run('請幫我計算')
-        expect(mock_llm).to have_received(:chat)
-          .with(array_including(hash_including(content: /Detect the language/)))
+      it 'defaults to English thinking' do
+        result = agent.run('Please help me calculate')
+        expect(result.successful?).to be true
+        # Should use default 'en' for thinking
       end
     end
 
@@ -134,15 +123,10 @@ RSpec.describe 'Think In Languages Feature', type: :feature do
         )
       end
 
-      it 'skips detection' do
+      it 'uses specified language for thinking' do
         result = agent.run('Test input')
         expect(result.successful?).to be true
-      end
-
-      it 'does not call language detection' do
-        agent.run('Test input')
-        expect(mock_llm).not_to have_received(:chat)
-          .with(array_including(hash_including(content: /Detect the language/)))
+        # Should use specified 'ja-JP' for thinking
       end
     end
   end

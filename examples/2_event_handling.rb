@@ -4,6 +4,7 @@
 require 'bundler/setup'
 require 'soka'
 require 'dotenv/load'
+require 'dentaku'
 
 # Configure Soka
 Soka.setup do |config|
@@ -21,14 +22,15 @@ end
 
 # Simple calculation tool
 class CalculatorTool < Soka::AgentTool
-  desc 'Perform calculations'
+  desc 'Perform calculations using Dentaku (safe math evaluator)'
 
   params do
-    requires :expression, String, desc: 'Mathematical expression to calculate'
+    requires :expression, String, desc: 'Mathematical expression (use ^ for power, e.g., "2^3" = 8)'
   end
 
   def call(expression:)
-    result = eval(expression) # rubocop:disable Security/Eval
+    calculator = Dentaku::Calculator.new
+    result = calculator.evaluate(expression)
     "Result: #{expression} = #{result}"
   rescue StandardError => e
     "Error: #{e.message}"

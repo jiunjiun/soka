@@ -37,10 +37,22 @@ module Soka
     # Apply configuration options with defaults
     # @param options [Hash] Configuration options
     def apply_configuration(options)
-      @max_iterations = options.fetch(:max_iterations) { self.class._max_iterations || 10 }
-      @timeout = options.fetch(:timeout) { self.class._timeout || 30 }
+      apply_performance_config(options)
+      apply_behavior_config(options)
+    end
+
+    # Apply performance-related configuration
+    # @param options [Hash] Configuration options
+    def apply_performance_config(options)
+      @max_iterations = options.fetch(:max_iterations) { self.class._max_iterations } || 10
+      @timeout = options.fetch(:timeout) { self.class._timeout } || 30
+    end
+
+    # Apply behavior-related configuration
+    # @param options [Hash] Configuration options
+    def apply_behavior_config(options)
       @instructions = options.fetch(:instructions) { self.class._instructions }
-      @think_in = options.fetch(:think_in) { self.class._think_in }
+      @think_in = options.fetch(:think_in) { self.class._think_in } || 'en'
     end
 
     # Run the agent with the given input

@@ -2,8 +2,26 @@
 
 require_relative '../lib/soka'
 require 'dotenv/load'
+require 'dentaku'
 
-# Example of using the think_in feature for multilingual thinking
+# Example 10: Think In Languages Feature
+#
+# This example demonstrates the think_in feature that allows Agents to use
+# a specific language for their internal reasoning process.
+#
+# Key concepts:
+# - think_in specifies the language for internal thoughts
+# - Final answers typically match the user's input language
+# - Default thinking language is 'en' (English)
+# - No automatic language detection - you must specify explicitly
+#
+# Benefits:
+# - Improved reasoning quality for specific languages
+# - Better cultural context understanding
+# - Consistent reasoning patterns across teams
+# - Reduced API calls (no language detection)
+
+# Example: Multilingual Agent with configurable thinking language
 class MultilingualAgent < Soka::Agent
   provider ENV.fetch('AGENT_PROVIDER', :gemini).to_sym
   model ENV.fetch('AGENT_MODEL', nil)
@@ -17,7 +35,8 @@ class MultilingualAgent < Soka::Agent
     end
     
     def call(expression:)
-      result = eval(expression)
+      calculator = Dentaku::Calculator.new
+      result = calculator.evaluate(expression)
       "The result of #{expression} is #{result}"
     rescue StandardError => e
       "Error calculating: #{e.message}"
@@ -30,24 +49,30 @@ end
 puts "=== Think In Languages Example ==="
 puts
 
-# Example 1: Chinese thinking
-puts "1. Chinese Question (Auto-detect):"
-agent = MultilingualAgent.new
+# Example 1: Default behavior - thinks in English
+# Without specifying think_in, the agent defaults to English thinking
+# but still understands and responds appropriately to Chinese input
+puts "1. Chinese Input (Default English thinking):"
+agent = MultilingualAgent.new  # No think_in specified, defaults to 'en'
 result = agent.run("幫我計算 123 + 456 的結果")
 puts "Answer: #{result.final_answer}"
 puts
 
-# Example 2: Japanese thinking with explicit setting
-puts "2. Japanese Question (Explicit):"
+# Example 2: Explicit Japanese thinking
+# Specifying think_in='ja-JP' makes the agent think in Japanese
+# This can improve reasoning quality for Japanese cultural contexts
+puts "2. English Input with Japanese Thinking:"
 agent = MultilingualAgent.new(think_in: 'ja-JP')
 result = agent.run("Calculate the sum of 789 and 321")
 puts "Answer: #{result.final_answer}"
 puts
 
-# Example 3: Korean thinking via DSL
-puts "3. Korean Question (DSL):"
+# Example 3: DSL configuration for Korean thinking
+# Using the DSL to set think_in at the class level
+# All instances of KoreanAgent will think in Korean by default
+puts "3. DSL Configuration (Korean thinking):"
 class KoreanAgent < MultilingualAgent
-  think_in 'ko-KR'
+  think_in 'ko-KR'  # Class-level configuration
 end
 
 agent = KoreanAgent.new

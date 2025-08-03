@@ -1,201 +1,349 @@
 # Soka - Ruby ReAct Agent Framework
 
-## Project Overview
+## 🎯 What is Soka?
 
-Soka is a Ruby AI Agent framework based on the ReAct (Reasoning and Acting) pattern. It supports multiple AI providers (Gemini Studio, OpenAI, Anthropic) and provides an object-oriented tool system and intelligent memory management.
+Soka is a Ruby framework for building AI agents using the ReAct (Reasoning and Acting) pattern. It enables your Ruby applications to leverage AI capabilities through a clean, object-oriented interface.
 
-## Core Architecture
+### Key Features
+- **Multi-Provider Support**: Works with Gemini, OpenAI, and Anthropic out of the box
+- **ReAct Pattern**: Implements structured reasoning with Thought → Action → Observation → Final Answer flow
+- **Tool System**: Define custom tools that agents can use to interact with your application
+- **Memory Management**: Built-in conversation and thought process tracking
+- **Minimal Dependencies**: Only requires `faraday` and `zeitwerk` - no heavy frameworks
 
-### Directory Structure
+## 🚀 Quick Start
+
+```ruby
+class MyAgent < Soka::Agent
+  provider :gemini
+  model 'gemini-2.5-flash-lite'
+
+  tool :calculator, 'Performs math calculations' do
+    def call(expression:)
+      # Your tool logic here
+    end
+  end
+end
+
+agent = MyAgent.new
+result = agent.run("Calculate 123 * 456")
+puts result.final_answer
+```
+
+## 📁 Project Structure
+
 ```
 soka/
-├── lib/
-│   ├── soka.rb                    # Main entry point with Zeitwerk autoloading
-│   └── soka/
-│       ├── agent.rb               # Agent base class with DSL and execution logic
-│       ├── agent_tool.rb          # Tool base class with parameter validation
-│       ├── agent_tools/
-│       │   └── params_validator.rb # Parameter validation module
-│       ├── agents/                # Agent feature modules
-│       │   ├── dsl_methods.rb     # DSL method definitions
-│       │   ├── hook_manager.rb    # Lifecycle hook management
-│       │   ├── llm_builder.rb     # LLM instance construction
-│       │   ├── retry_handler.rb   # Retry mechanism
-│       │   └── tool_builder.rb    # Tool construction and management
-│       ├── configuration.rb       # Global configuration system
-│       ├── llm.rb                 # LLM unified interface layer
-│       ├── llms/                  # LLM provider implementations
-│       │   ├── base.rb           # LLM base class
-│       │   ├── concerns/         # Shared functionality modules
-│       │   │   ├── response_parser.rb    # Response parsing
-│       │   │   └── streaming_handler.rb  # Stream processing
-│       │   ├── gemini.rb         # Google Gemini implementation
-│       │   ├── openai.rb         # OpenAI implementation
-│       │   └── anthropic.rb      # Anthropic implementation
-│       ├── engines/              # Reasoning engines
-│       │   ├── base.rb          # Engine base class
-│       │   ├── concerns/        # Engine shared modules
-│       │   │   ├── prompt_template.rb     # Prompt templates
-│       │   │   └── response_processor.rb  # Response processing
-│       │   ├── react.rb         # ReAct reasoning engine
-│       │   └── reasoning_context.rb # Reasoning context management
-│       ├── memory.rb             # Conversation memory management
-│       ├── thoughts_memory.rb    # Thought process memory
-│       ├── result.rb             # Result object encapsulation
-│       ├── test_helpers.rb       # RSpec test helpers
-│       └── version.rb            # Version definition
-├── examples/
-│   ├── 1_basic.rb               # Basic usage example
-│   ├── 2_event_handling.rb      # Event handling example
-│   ├── 3_memory.rb              # Memory usage example
-│   ├── 4_hooks.rb               # Lifecycle hooks example
-│   ├── 5_error_handling.rb      # Error handling example
-│   ├── 6_retry.rb               # Retry mechanism example
-│   ├── 7_tool_conditional.rb    # Conditional tools example
-│   └── 8_multi_provider.rb      # Multi-provider example
-├── spec/                         # RSpec tests
-└── test_soka.rb                 # Quick test script
+├── lib/soka/
+│   ├── agent.rb                 # Core Agent class with DSL
+│   ├── agent_tool.rb            # Base class for tools
+│   ├── agents/                  # Agent components (modular design)
+│   │   ├── dsl_methods.rb       # DSL for agent configuration
+│   │   ├── hook_manager.rb      # Lifecycle hooks
+│   │   ├── llm_builder.rb       # LLM instance creation
+│   │   ├── retry_handler.rb     # Retry logic
+│   │   └── tool_builder.rb      # Tool management
+│   ├── engines/                 # Reasoning engines
+│   │   ├── react.rb             # ReAct implementation
+│   │   └── concerns/            # Shared engine modules
+│   ├── llms/                    # AI provider integrations
+│   │   ├── gemini.rb            # Google Gemini
+│   │   ├── openai.rb            # OpenAI GPT
+│   │   └── anthropic.rb         # Anthropic Claude
+│   └── memory.rb                # Conversation memory
+├── examples/                    # Working examples (1-10)
+└── spec/                        # RSpec tests
 ```
 
-## Core Component Descriptions
+## 🔧 Core Components
 
-### 1. Agent System (`agent.rb`)
-- Provides DSL for defining AI settings, tool registration, and retry mechanisms
-- Supports conditional tool loading (`if:` option)
-- Built-in lifecycle hooks (before_action, after_action, on_error)
-- Uses `times` loop instead of `loop` for iteration control
-- Modular design: functionality separated into concern modules
-  - `DSLMethods`: DSL method definitions
-  - `HookManager`: Lifecycle hook management
-  - `LLMBuilder`: LLM instance construction
-  - `RetryHandler`: Retry handling
-  - `ToolBuilder`: Tool construction and management
+### Agent System
+The heart of Soka - defines agents with a simple DSL:
 
-### 2. Tool System (`agent_tool.rb`)
-- Grape API-like parameter definition system
-- Built-in parameter validation (presence, length, inclusion, format)
-- Supports required and optional parameters
-- Auto-generates tool description schemas
+```ruby
+class MyAgent < Soka::Agent
+  provider :gemini              # Choose AI provider
+  model 'gemini-2.5-flash-lite' # Specify model
+  max_iterations 10              # Limit reasoning cycles
+  timeout 30                     # Request timeout
 
-### 3. ReAct Engine (`engines/react.rb`)
-- Implements tagged ReAct flow: `<Thought>`, `<Action>`, `<Observation>`, `<Final_Answer>`
-- Uses Struct instead of OpenStruct (Rubocop compliant)
-- Automatically manages conversation context and tool execution
-- Calculates confidence scores (based on iteration count)
-- Uses `ReasoningContext` to manage reasoning state
-- Shared modules:
-  - `PromptTemplate`: Prompt template management
-  - `ResponseProcessor`: Response processing logic
+  # Define tools
+  tool :my_tool, 'Description' do
+    def call(param:)
+      # Tool implementation
+    end
+  end
 
-### 4. LLM Integration
-- **LLM Unified Interface Layer (`llm.rb`)**
-  - Provides unified API interface
-  - Supports streaming and non-streaming modes
-  - Auto-routes to corresponding provider implementation
-- **LLM Provider Implementations (`llms/`)**
-  - Gemini: Uses Google Generative AI API, defaults to `gemini-2.5-flash-lite`
-  - OpenAI: Supports GPT-4 series, includes streaming capabilities
-  - Anthropic: Supports Claude 3 series, handles system prompts
-  - Shared modules:
-    - `ResponseParser`: Unified response parsing
-    - `StreamingHandler`: Stream response handling
-- Built-in error handling and retry mechanisms
+  # Lifecycle hooks
+  before_action { |task| log("Starting: #{task}") }
+  after_action { |result| log("Completed: #{result}") }
+  on_error { |error| handle_error(error) }
+end
+```
 
-### 5. Memory System
-- `Memory`: Manages conversation history
-- `ThoughtsMemory`: Records complete ReAct thought processes
-- Supports initial memory loading
+### Tool System
+Create reusable tools with parameter validation:
 
-## Design Decisions
+```ruby
+class WeatherTool < Soka::AgentTool
+  desc 'Get weather information'
 
-### 1. Using Zeitwerk Autoloading
-- Simplifies require management
-- Supports hot reloading (development environment)
-- Automatically handles namespaces
+  params do
+    requires :location, String, desc: 'City name'
+    optional :units, String, inclusion: %w[celsius fahrenheit]
+  end
 
-### 2. Dry-rb Ecosystem Integration
-- `dry-validation`: Powerful parameter validation
-- `dry-struct`: Type-safe data structures
-- `dry-types`: Type definitions and coercion
+  def call(location:, units: 'celsius')
+    # Fetch weather data
+    "Weather in #{location}: 22°C, Sunny"
+  end
+end
+```
 
-### 3. Configuration System Design
-- Supports global configuration and instance-level overrides
-- Block-style DSL provides intuitive configuration
-- Fallback mechanism ensures service availability
-- Configuration includes AI providers and performance settings
+### ReAct Engine
+Implements the reasoning pattern with structured tags:
 
-### 4. Error Handling Strategy
-- Layered error class inheritance
-- Tool execution errors don't interrupt entire flow
-- Configurable retry mechanism (exponential backoff)
+1. **Thought**: Agent thinks about the task
+2. **Action**: Decides which tool to use
+3. **Observation**: Receives tool results
+4. **Final Answer**: Provides the solution
 
-## Testing Strategy
+The engine automatically:
+- Manages iteration loops
+- Calculates confidence scores
+- Handles tool execution
+- Tracks reasoning context
 
-### Unit Tests
-- Using RSpec 3
-- Provides `TestHelpers` module for mocking AI responses
-- Supports tool mocking and error simulation
+### Memory System
+Two types of memory for different purposes:
 
-### Integration Tests
-- `test_soka.rb`: Quick test without real API keys
-- `examples/1_basic.rb`: Actual API integration test
+- **Conversation Memory**: Tracks dialogue history
+- **Thoughts Memory**: Records complete reasoning processes
 
-## Development Guide
+```ruby
+# Initialize with existing conversation
+memory = Soka::Memory.new
+memory.add(role: 'user', content: 'Previous question')
+memory.add(role: 'assistant', content: 'Previous answer')
 
-### Adding New AI Provider
-1. Create new file in `lib/soka/llms/`
+agent = MyAgent.new(memory: memory)
+```
+
+## 🎨 Advanced Features
+
+### Custom Instructions
+Change your agent's personality and response style:
+
+```ruby
+class FriendlyAgent < Soka::Agent
+  provider :gemini
+
+  # Define personality at class level
+  instructions <<~PROMPT
+    You are a friendly, helpful assistant.
+    Use casual language and be encouraging.
+    Add emojis when appropriate.
+  PROMPT
+end
+
+# Or override at runtime
+agent = FriendlyAgent.new(
+  instructions: 'Be more formal and professional.'
+)
+```
+
+### Multilingual Thinking (Think In)
+Optimize reasoning for specific languages:
+
+```ruby
+class GlobalAgent < Soka::Agent
+  provider :gemini
+
+  # Set default thinking language
+  think_in 'zh-TW'  # Think in Traditional Chinese
+end
+
+# Or set dynamically
+agent = GlobalAgent.new(think_in: 'ja-JP')
+result = agent.run("Help me with this task")
+```
+
+**Key Points:**
+- Thinking language affects internal reasoning only
+- Responses adapt to user's input language
+- Default is English (`'en'`)
+- No automatic language detection (explicit setting required)
+
+### Conditional Tools
+Load tools based on conditions:
+
+```ruby
+class SmartAgent < Soka::Agent
+  # Only in development
+  tool DebugTool, if: -> { ENV['RAILS_ENV'] == 'development' }
+
+  # Based on user permissions
+  tool AdminTool, if: -> { current_user.admin? }
+
+  # Feature flags
+  tool BetaFeature, if: -> { feature_enabled?(:beta) }
+end
+```
+
+## 🛠 Development Guide
+
+### Creating a New AI Provider
+
+1. Create file in `lib/soka/llms/your_provider.rb`
 2. Inherit from `Soka::LLMs::Base`
 3. Implement required methods:
-   - `default_model`
-   - `base_url`
-   - `chat(messages, **params)`
-   - `parse_response(response)`
-4. Add new provider to `LLM#create_provider` method
 
-### Adding New Tools
-1. Inherit from `Soka::AgentTool`
-2. Use `desc` to define description
-3. Use `params` block to define parameters
-4. Implement `call` method
+```ruby
+module Soka
+  module LLMs
+    class YourProvider < Base
+      def default_model
+        'your-default-model'
+      end
 
-### Custom Engines
-1. Inherit from `Soka::Engines::Base`
-2. Implement `reason(task, &block)` method
-3. Use `emit_event` to send events
-4. Return result object inheriting from Struct
-5. Can use concerns modules to share functionality
+      def base_url
+        'https://api.yourprovider.com'
+      end
 
-## Rubocop Compatibility
-- Complies with Ruby 3.0+ standards
-- Major issues fixed:
-  - Using `Struct` instead of `OpenStruct`
-  - Using `format` instead of `String#%`
-  - Using `times` instead of `loop`
-  - Removed unused MODELS constants
+      def chat(messages, **params)
+        # Make API request
+        # Return response
+      end
 
-## Performance Considerations
-- Maximum iteration limit (default 10)
-- Request timeout settings (default 30 seconds)
-- Memory usage optimization (lazy loading)
+      def parse_response(response)
+        # Parse API response
+        # Return standardized format
+      end
+    end
+  end
+end
+```
 
-## Security
-- API keys managed through environment variables
-- Input parameter validation
-- Error messages don't leak sensitive information
-- Supports `.env` files (not version controlled)
-- Unified error handling hierarchy
+### Creating Custom Engines
 
-## Future Extensions
-- [ ] Support more LLM providers (Cohere, Hugging Face)
-- [ ] Implement caching mechanism
-- [ ] Support vector database integration
-- [ ] Add more built-in tools
-- [ ] WebSocket support for real-time conversations
-- [ ] Support functional tools (use methods directly as tools)
+```ruby
+class MyEngine < Soka::Engines::Base
+  def reason(task, &block)
+    # Implement your reasoning logic
+    emit_event(:thought, "Thinking about: #{task}")
 
-## Development Standards
+    # Process and return result
+    MyResult.new(
+      input: task,
+      output: "Processed result",
+      status: :success
+    )
+  end
+end
+```
 
-### Code Quality Checks
+## ⚙️ Configuration
+
+### Global Configuration
+
+```ruby
+Soka.setup do |config|
+  config.ai do |ai|
+    ai.provider = :gemini
+    ai.model = 'gemini-2.5-flash-lite'
+    ai.api_key = ENV['GEMINI_API_KEY']
+  end
+
+  config.performance do |perf|
+    perf.max_iterations = 10
+    perf.timeout = 30
+  end
+end
+```
+
+### Environment Variables
+
+```bash
+# .env file
+GEMINI_API_KEY=your_api_key
+OPENAI_API_KEY=your_api_key
+ANTHROPIC_API_KEY=your_api_key
+```
+
+## 📊 Performance & Security
+
+### Performance Tips
+- Set appropriate `max_iterations` to prevent infinite loops
+- Use `timeout` to handle slow API responses
+- Implement caching for frequently used tools
+- Consider memory limits for long conversations
+
+### Security Best Practices
+- Never commit API keys to version control
+- Use environment variables for sensitive data
+- Validate all tool inputs
+- Sanitize tool outputs before returning
+- Implement rate limiting for production use
+
+## 🧪 Testing
+
+### Unit Testing
+
+```ruby
+RSpec.describe MyAgent do
+  let(:agent) { described_class.new }
+
+  it 'processes tasks correctly' do
+    result = agent.run('Test task')
+    expect(result).to be_successful
+    expect(result.final_answer).to include('expected')
+  end
+end
+```
+
+### Mocking AI Responses
+
+```ruby
+allow(agent).to receive(:llm).and_return(mock_llm)
+allow(mock_llm).to receive(:chat).and_return(
+  double(content: '<Thought>Test</Thought><Final_Answer>Done</Final_Answer>')
+)
+```
+
+## 📚 Examples
+
+The `examples/` directory contains 10 comprehensive examples:
+
+1. **Basic Usage** - Simple agent setup and execution
+2. **Event Handling** - Responding to agent events
+3. **Memory Management** - Using conversation memory
+4. **Lifecycle Hooks** - before/after/error handling
+5. **Error Handling** - Graceful error management
+6. **Retry Logic** - Automatic retry configuration
+7. **Conditional Tools** - Dynamic tool loading
+8. **Multi-Provider** - Switching between AI providers
+9. **Custom Instructions** - Personality customization
+10. **Multilingual Thinking** - Language-specific reasoning
+
+## 🔄 Future Roadmap
+
+- [ ] Additional LLM providers (Cohere, Hugging Face)
+- [ ] Built-in caching mechanism
+- [ ] Vector database integration for RAG
+- [ ] More built-in tools (web search, file operations)
+- [ ] WebSocket support for real-time streaming
+- [ ] Direct method-as-tool support
+
+## 📖 Development Standards
+
+### Code Quality
+- Run `bundle exec rubocop` before committing
+- Ensure all tests pass with `bundle exec rspec`
+- Follow Ruby style guide and conventions
+- Keep methods small and focused
+- Write clear, self-documenting code
+
+### Code Quality Checks (Important for AI Assistants)
 - **When adjusting code, the final step is to run Rubocop to check if the code complies with rules**
 - **When Rubocop has any issues, fix them until all rules are satisfied**
 - **When adjusting code, the final step is to perform a code review to avoid redundant design and ensure code conciseness**
@@ -211,3 +359,14 @@ soka/
   - Explain parameter types and purposes
   - Explain return value types and meanings
   - For complex logic, add implementation detail explanations
+- Include usage examples in comments
+- Document all public APIs
+- Keep README and CLAUDE.md updated
+
+## 🤝 Contributing
+
+[Contributing Guidelines]
+
+---
+
+*Built with ❤️ using Ruby and AI*

@@ -346,55 +346,23 @@ RSpec.describe Soka::Engines::React do
       end
     end
 
-    context 'with confidence score calculation' do
-      it 'calculates higher confidence for fewer iterations' do
-        mock_quick_answer(test_context[:llm])
-        result = engine.reason('Quick question')
-
+    def create_multiple_iterations
+      Array.new(4) do
+        Soka::LLMs::Result.new(content: <<~ITER)
+          <Thought>Still thinking...</Thought>
+          <Action>
+          Tool: search
+          Parameters: {"query": "more info"}
+          </Action>
+        ITER
       end
+    end
 
-      def mock_quick_answer(llm)
-        responses = [
-          Soka::LLMs::Result.new(content: 'en'),  # Language detection
-          Soka::LLMs::Result.new(content: <<~QUICK)
-            <Thought>This is straightforward.</Thought>
-            <Final_Answer>Quick answer</Final_Answer>
-          QUICK
-        ]
-        allow(llm).to receive(:chat).and_return(*responses)
-      end
-
-      it 'calculates lower confidence for more iterations' do
-        mock_lengthy_reasoning(test_context[:llm])
-        result = engine.reason('Complex question')
-
-      end
-
-      def mock_lengthy_reasoning(llm)
-        responses = [Soka::LLMs::Result.new(content: 'en')] # Language detection
-        responses.concat(create_multiple_iterations)
-        responses << create_final_response
-        allow(llm).to receive(:chat).and_return(*responses)
-      end
-
-      def create_multiple_iterations
-        Array.new(4) do
-          Soka::LLMs::Result.new(content: <<~ITER)
-            <Thought>Still thinking...</Thought>
-            <Action>
-            Tool: search
-            Parameters: {"query": "more info"}
-            </Action>
-          ITER
-        end
-      end
-
-      def create_final_response
-        Soka::LLMs::Result.new(content: <<~FINAL)
-          <Observation>Found something</Observation>
-          <Final_Answer>Finally, the answer</Final_Answer>
-        FINAL
-      end
+    def create_final_response
+      Soka::LLMs::Result.new(content: <<~FINAL)
+        <Observation>Found something</Observation>
+        <Final_Answer>Finally, the answer</Final_Answer>
+      FINAL
     end
 
     context 'with custom instructions' do
@@ -472,7 +440,7 @@ RSpec.describe Soka::Engines::React do
         thoughts: [{ thought: 'thinking' }],
         final_answer: 'answer',
         status: :success,
-        error: nil,
+        error: nil
       )
     end
 

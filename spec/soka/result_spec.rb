@@ -323,6 +323,5 @@ RSpec.describe Soka::Result do
       result = described_class.new(status: :success, final_answer: nil)
       expect(result.summary).to eq('Success: ')
     end
-
   end
 end

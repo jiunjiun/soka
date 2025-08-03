@@ -23,9 +23,8 @@ module Soka
       # @yield [event] Optional block to handle events during execution
       # @return [ReasonResult] The result of the reasoning process
       def reason(task, &block)
-        determined_language = determine_thinking_language(task)
         context = ReasoningContext.new(task: task, event_handler: block, max_iterations: max_iterations,
-                                       think_in: determined_language)
+                                       think_in: think_in)
         context.messages = build_messages(task)
 
         result = iterate_reasoning(context)
@@ -59,42 +58,6 @@ module Soka
       end
 
       private
-
-      # Determine the language to use for thinking
-      # @param task [String] The input task
-      # @return [String, nil] The language to use for thinking
-      def determine_thinking_language(task)
-        return think_in if think_in
-
-        detect_language_from_input(task)
-      end
-
-      # Detect language from input using LLM
-      # @param task [String] The input text
-      # @return [String, nil] The detected language code
-      def detect_language_from_input(task)
-        return nil if task.nil? || task.empty?
-
-        messages = build_language_detection_messages(task)
-        response = llm.chat(messages)
-        response.content.strip
-      rescue StandardError
-        nil
-      end
-
-      # Build messages for language detection
-      # @param task [String] The input text
-      # @return [Array<Hash>] The messages for language detection
-      def build_language_detection_messages(task)
-        [
-          {
-            role: 'system',
-            content: 'Detect the language of the input. Reply with ONLY the language code: ' \
-                     'zh-TW, zh-CN, ja-JP, ko-KR, en, es, fr, de, pt-BR, etc.'
-          },
-          { role: 'user', content: task }
-        ]
-      end
 
       # Process a single iteration of reasoning
       # @param context [ReasoningContext] The reasoning context

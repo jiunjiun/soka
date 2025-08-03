@@ -200,7 +200,6 @@ RSpec.describe Soka::ThoughtsMemory do
     end
   end
 
-
   describe '#average_iterations' do
     it 'calculates average thought count' do
       add_sessions_with_different_iterations(memory)
@@ -248,7 +247,6 @@ RSpec.describe Soka::ThoughtsMemory do
         expect(string).to include('3 sessions')
         expect(string).to include('2 successful')
         expect(string).to include('1 failed')
-        expect(string).to include('avg confidence:')
         expect(string).to include('avg iterations:')
       end
     end
@@ -281,7 +279,6 @@ RSpec.describe Soka::ThoughtsMemory do
   end
 
   describe 'edge cases' do
-
     it 'handles sessions with no thoughts' do
       result = Soka::Result.new(thoughts: nil, status: :success)
       memory.add('No thoughts', result)
