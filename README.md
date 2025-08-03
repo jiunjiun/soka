@@ -240,6 +240,12 @@ class WeatherAgent < Soka::Agent
 
   # Custom tool (functional) - requires description as second parameter
   tool :get_weather, "Get weather for a location"
+  
+  # Custom instructions (optional)
+  instructions "You are a weather expert. Provide detailed weather information."
+  
+  # Thinking language (optional)
+  think_in 'en'  # Default is 'en'
 
   # Lifecycle hooks
   before_action :track_action
@@ -362,6 +368,54 @@ puts last_session[:final_answer]  # Final answer for that execution
 ```
 
 ## Advanced Features
+
+### Custom Instructions
+
+Customize your agent's personality and response style:
+
+```ruby
+class FriendlyAgent < Soka::Agent
+  provider :gemini
+  
+  # Define personality at class level
+  instructions <<~PROMPT
+    You are a friendly, helpful assistant.
+    Use casual language and be encouraging.
+    Add emojis when appropriate.
+  PROMPT
+end
+
+# Or override at runtime
+agent = FriendlyAgent.new(
+  instructions: 'Be more formal and professional.'
+)
+result = agent.run("Help me with this task")
+```
+
+### Multilingual Thinking (Think In)
+
+Optimize reasoning for specific languages:
+
+```ruby
+class GlobalAgent < Soka::Agent
+  provider :gemini
+  
+  # Set default thinking language
+  think_in 'zh-TW'  # Think in Traditional Chinese
+end
+
+# Or set dynamically
+agent = GlobalAgent.new(think_in: 'ja-JP')
+result = agent.run("幫我解決這個問題")  # Input in Chinese
+# Agent thinks in Japanese internally, responds in Chinese
+```
+
+**Key Points:**
+- Thinking language affects internal reasoning only
+- Responses adapt to user's input language
+- Default is English (`'en'`)
+- No automatic language detection (explicit setting required)
+- Improves reasoning quality for language-specific contexts
 
 ### ReAct Flow Format
 
@@ -550,6 +604,20 @@ Demonstrates using different AI providers:
 - Comparing outputs across models
 - Cost optimization strategies
 
+### 9. Custom Instructions (`examples/9_custom_instructions.rb`)
+Shows how to customize agent personality:
+- Setting instructions at class level
+- Runtime instruction override
+- Creating different agent personalities
+- Use cases for different domains
+
+### 10. Multilingual Thinking (`examples/10_think_in_languages.rb`)
+Demonstrates language-specific reasoning:
+- Setting thinking language with `think_in`
+- Class-level vs instance-level configuration
+- Performance comparison across languages
+- Cultural context optimization
+
 To run any example:
 ```bash
 # Make sure you have the required API keys in your .env file
@@ -583,6 +651,8 @@ ruby examples/1_basic.rb
 | `ai.provider` | Symbol | `:gemini` | AI provider |
 | `ai.model` | String | `"gemini-2.5-flash-lite"` | Model to use |
 | `ai.api_key` | String | nil | API key |
+| `ai.instructions` | String | nil | Custom agent instructions |
+| `ai.think_in` | String | `"en"` | Thinking language |
 | `performance.max_iterations` | Integer | 10 | Max iterations |
 | `performance.timeout` | Integer | 30 | Timeout (seconds) |
 
