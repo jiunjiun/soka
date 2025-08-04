@@ -51,9 +51,13 @@ module Soka
         end
 
         # Define custom instructions (system prompt) for the agent
-        # @param text [String] The custom instructions/system prompt
-        def instructions(text)
-          @_instructions = text
+        # @param text_or_method [String, Symbol] The custom instructions/system prompt or method name
+        # @example Using a string
+        #   instructions "You are a helpful assistant"
+        # @example Using a method
+        #   instructions :generate_instructions
+        def instructions(text_or_method)
+          @_instructions = text_or_method
         end
 
         # Define thinking language for the agent

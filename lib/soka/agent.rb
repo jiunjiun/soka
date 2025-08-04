@@ -51,7 +51,7 @@ module Soka
     # Apply behavior-related configuration
     # @param options [Hash] Configuration options
     def apply_behavior_config(options)
-      @instructions = options.fetch(:instructions) { self.class._instructions }
+      @instructions = options.fetch(:instructions) { resolve_instructions }
       @think_in = options.fetch(:think_in) { self.class._think_in } || 'en'
     end
 
@@ -86,6 +86,35 @@ module Soka
       end
     end
 
+    # Resolve instructions from class configuration
+    # @return [String, nil] The resolved instructions
+    def resolve_instructions
+      return nil unless self.class._instructions
+
+      case self.class._instructions
+      when Symbol
+        # Call the method if it's a symbol
+        send(self.class._instructions) if respond_to?(self.class._instructions, true)
+      else
+        # Return string or any other value directly
+        self.class._instructions
+      end
+    end
+
+    # Resolve current instructions (may be dynamic)
+    # @return [String, nil] The current instructions
+    def resolve_current_instructions
+      case @instructions
+      when Symbol
+        send(@instructions) if respond_to?(@instructions, true)
+      when Proc
+        @instructions.call
+      else
+        # Return string or any other value directly
+        @instructions
+      end
+    end
+
     # Validate the input is not empty
     # @param input [String] The input to validate
     # @raise [ArgumentError] If input is empty
@@ -115,7 +144,7 @@ module Soka
       engine_instance = @engine.new(self, @tools,
                                     llm: @llm,
                                     max_iterations: @max_iterations,
-                                    custom_instructions: @instructions,
+                                    custom_instructions: resolve_current_instructions,
                                     think_in: @think_in)
       with_retry { engine_instance.reason(input, &) }
     end
