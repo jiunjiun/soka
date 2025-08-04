@@ -148,7 +148,7 @@ class ConversationsController < ApplicationController
   def create
     agent = CustomerSupportAgent.new
     result = agent.run(params[:message])
-    
+
     render json: {
       answer: result.final_answer,
       status: result.status
@@ -240,10 +240,10 @@ class WeatherAgent < Soka::Agent
 
   # Custom tool (functional) - requires description as second parameter
   tool :get_weather, "Get weather for a location"
-  
+
   # Custom instructions (optional)
   instructions "You are a weather expert. Provide detailed weather information."
-  
+
   # Thinking language (optional)
   think_in 'en'  # Default is 'en'
 
@@ -376,8 +376,8 @@ Customize your agent's personality and response style:
 ```ruby
 class FriendlyAgent < Soka::Agent
   provider :gemini
-  
-  # Define personality at class level
+
+  # Method 1: Static string instructions
   instructions <<~PROMPT
     You are a friendly, helpful assistant.
     Use casual language and be encouraging.
@@ -385,7 +385,28 @@ class FriendlyAgent < Soka::Agent
   PROMPT
 end
 
-# Or override at runtime
+# Method 2: Dynamic instructions using method
+class DynamicAgent < Soka::Agent
+  provider :gemini
+
+  # Reference a method for dynamic instructions
+  instructions :generate_instructions
+
+  private
+
+  def generate_instructions
+    hour = Time.now.hour
+    mood = hour < 12 ? 'cheerful morning' : 'relaxed afternoon'
+
+    <<~PROMPT
+      You are a #{mood} assistant.
+      Current Time: #{Time.now.strftime('%Y-%m-%d %H:%M:%S')}
+      Adjust your tone based on the time of day.
+    PROMPT
+  end
+end
+
+# Method 3: Override at runtime
 agent = FriendlyAgent.new(
   instructions: 'Be more formal and professional.'
 )
@@ -399,7 +420,7 @@ Optimize reasoning for specific languages:
 ```ruby
 class GlobalAgent < Soka::Agent
   provider :gemini
-  
+
   # Set default thinking language
   think_in 'zh-TW'  # Think in Traditional Chinese
 end
@@ -611,7 +632,14 @@ Shows how to customize agent personality:
 - Creating different agent personalities
 - Use cases for different domains
 
-### 10. Multilingual Thinking (`examples/10_think_in_languages.rb`)
+### 10. Dynamic Instructions (`examples/10_dynamic_instructions.rb`)
+Demonstrates dynamic instruction generation:
+- Using methods to generate instructions dynamically
+- Time-based instruction changes
+- Environment-based configuration
+- Session-based personality switching
+
+### 11. Multilingual Thinking (`examples/11_think_in_languages.rb`)
 Demonstrates language-specific reasoning:
 - Setting thinking language with `think_in`
 - Class-level vs instance-level configuration
