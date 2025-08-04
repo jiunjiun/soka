@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.4] - 2025-08-04
+
+### Features
+- feat: add dynamic instructions via method support (e428631)
+
+### Documentation
+- docs: update README with dynamic instructions feature (b3f2d81)
+
 ## [0.0.3] - 2025-08-03
 
 ### Features
