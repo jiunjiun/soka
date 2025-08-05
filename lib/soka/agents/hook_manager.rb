@@ -10,12 +10,12 @@ module Soka
       # @param hook_type [Symbol] The type of hook (:before_action, :after_action, :on_error)
       # @param args [Array] Arguments to pass to the hook methods
       # @return [Object, nil] The result from on_error hooks, or nil
-      def run_hooks(hook_type, *)
+      def run_hooks(hook_type, ...)
         return unless self.class._hooks && self.class._hooks[hook_type]
 
         self.class._hooks[hook_type].each do |method_name|
           if respond_to?(method_name, true)
-            result = send(method_name, *)
+            result = send(method_name, ...)
             return result if hook_type == :on_error && result
           end
         end

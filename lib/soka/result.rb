@@ -65,8 +65,8 @@ module Soka
 
     # Convert to JSON string
     # @return [String]
-    def to_json(*)
-      to_h.to_json(*)
+    def to_json(...)
+      to_h.to_json(...)
     end
 
     # Get a summary of the result

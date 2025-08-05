@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
   spec.description = 'Soka is a Ruby framework for building AI agents using the ReAct (Reasoning and Acting) ' \
                      'pattern. It supports multiple AI providers including Gemini AI Studio, OpenAI, and Anthropic.'
   spec.homepage = 'https://github.com/jiunjiun/soka'
-  spec.required_ruby_version = '>= 3.4'
+  spec.required_ruby_version = '>= 3.1'
 
   spec.metadata['homepage_uri'] = spec.homepage
   spec.metadata['source_code_uri'] = 'https://github.com/jiunjiun/soka'

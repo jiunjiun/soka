@@ -87,7 +87,7 @@ RSpec.describe Soka::Engines::Base do
     end
 
     def expect_successful_execution(result)
-      expect(result).to include('param: "value"')
+      expect(result).to eq('Executed with: {:param=>"value"}')
     end
 
     it 'raises error for non-existent tool' do

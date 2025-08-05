@@ -69,14 +69,14 @@ module Soka
     # @param provider_name [Symbol] Provider type
     # @param options [Hash] Provider options
     # @return [LLMs::Base] Provider instance
-    def create_provider(provider_name, **)
+    def create_provider(provider_name, ...)
       case provider_name.to_sym
       when :gemini
-        LLMs::Gemini.new(**)
+        LLMs::Gemini.new(...)
       when :openai
-        LLMs::OpenAI.new(**)
+        LLMs::OpenAI.new(...)
       when :anthropic
-        LLMs::Anthropic.new(**)
+        LLMs::Anthropic.new(...)
       else
         raise LLMError, "Unknown LLM provider: #{provider_name}"
       end
