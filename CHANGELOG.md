@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.5] - 2025-08-05
+
+### Bug Fixes
+- fix: remove confidence_score from examples and hook manager (12d9e8b)
+
+### Tests
+- test: fix Hash#inspect format compatibility for Ruby 3.4 (c9f1a31)
+
+### Chores
+- chore: update CI workflows to test multiple Ruby versions (d2e1b9a)
+- chore: downgrade minimum Ruby version to 3.1 (8a3d7f0)
+
 ## [0.0.4] - 2025-08-04
 
 ### Features
