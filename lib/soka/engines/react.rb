@@ -11,7 +11,7 @@ module Soka
       include Concerns::ResponseParser
       include Concerns::ResultBuilder
 
-      ReasonResult = Struct.new(:input, :thoughts, :final_answer, :status, :error, :confidence_score,
+      ReasonResult = Struct.new(:input, :thoughts, :final_answer, :status, :error,
                                 keyword_init: true) do
         def successful?
           status == :success

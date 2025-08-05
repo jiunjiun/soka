@@ -136,7 +136,6 @@ result = agent_with_memory.run(
   "Please calculate 15 * 8, and remember this calculation result with key 'first_calc'"
 )
 puts "Agent: #{result.final_answer}"
-puts "Confidence: #{(result.confidence_score * 100).round(1)}%"
 puts "Iterations: #{result.iterations}"
 puts '-' * 50
 

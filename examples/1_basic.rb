@@ -90,5 +90,4 @@ puts '-' * 50
 
 result = agent.run('What time is it now?')
 puts "✅ Answer: #{result.final_answer}"
-puts "📊 Confidence: #{(result.confidence_score * 100).round(1)}%"
 puts "⏱️  Iterations: #{result.iterations}"

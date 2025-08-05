@@ -32,8 +32,7 @@ module Soka
           thoughts: engine_result.thoughts,
           final_answer: engine_result.final_answer,
           status: engine_result.status,
-          error: engine_result.error,
-          confidence_score: engine_result.confidence_score
+          error: engine_result.error
         )
       end
 
@@ -59,8 +58,7 @@ module Soka
           thoughts: [],
           final_answer: nil,
           status: :failed,
-          error: error.message,
-          confidence_score: 0.0
+          error: error.message
         )
       end
     end
