@@ -48,7 +48,8 @@ module Soka
           generationConfig: {
             temperature: params[:temperature] || options[:temperature],
             topP: params[:top_p] || options[:top_p],
-            topK: params[:top_k] || options[:top_k]
+            topK: params[:top_k] || options[:top_k],
+            thinkingConfig: { thinkingBudget: 512 }
           }
         }
       end
