@@ -37,18 +37,6 @@ module Soka
         @event_handler.call(event)
       end
 
-      # Check if we've reached the maximum number of iterations
-      # @return [Boolean] true if max iterations reached
-      def max_iterations_reached?
-        @iteration >= @max_iterations
-      end
-
-      # Increment the iteration counter
-      # @return [Integer] The new iteration count
-      def increment_iteration!
-        @iteration += 1
-      end
-
       # Get the current iteration number (1-based for display)
       # @return [Integer] The current iteration number for display
       def current_step

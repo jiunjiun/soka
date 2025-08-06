@@ -86,6 +86,8 @@ module Soka
         # @param context [ReasoningContext] The reasoning context
         # @param content [String] The raw response content
         def handle_no_action(context, content)
+          # Important: We still need to add the message to maintain conversation flow
+          # but we should NOT add a new thought since the response was incomplete
           context.add_message(role: 'assistant', content: content)
           context.add_message(
             role: 'user',

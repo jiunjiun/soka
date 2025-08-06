@@ -35,12 +35,13 @@ module Soka
       # @param context [ReasoningContext] The reasoning context
       # @return [ReasonResult, nil] The result if found, nil otherwise
       def iterate_reasoning(context)
-        max_iterations.times do
+        max_iterations.times do |index|
+          context.iteration = index # Set current iteration number
           result = process_iteration(context)
           return result if result
-
-          context.increment_iteration!
         end
+        # When max iterations reached, ensure iteration count is correct
+        context.iteration = max_iterations
         nil
       end
 
