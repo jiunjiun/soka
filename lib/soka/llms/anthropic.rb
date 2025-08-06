@@ -21,7 +21,6 @@ module Soka
           temperature: 0.7,
           top_p: 1.0,
           top_k: 1,
-          max_tokens: 2048,
           anthropic_version: '2023-06-01'
         }
       end
@@ -58,8 +57,7 @@ module Soka
           messages: formatted_messages,
           temperature: params[:temperature] || options[:temperature],
           top_p: params[:top_p] || options[:top_p],
-          top_k: params[:top_k] || options[:top_k],
-          max_tokens: params[:max_tokens] || options[:max_tokens]
+          top_k: params[:top_k] || options[:top_k]
         }
       end
 

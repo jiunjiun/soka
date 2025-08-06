@@ -21,8 +21,7 @@ module Soka
           temperature: 0.7,
           top_p: 1.0,
           frequency_penalty: 0,
-          presence_penalty: 0,
-          max_tokens: 2048
+          presence_penalty: 0
         }
       end
 
@@ -51,8 +50,7 @@ module Soka
           temperature: params[:temperature] || options[:temperature],
           top_p: params[:top_p] || options[:top_p],
           frequency_penalty: params[:frequency_penalty] || options[:frequency_penalty],
-          presence_penalty: params[:presence_penalty] || options[:presence_penalty],
-          max_tokens: params[:max_tokens] || options[:max_tokens]
+          presence_penalty: params[:presence_penalty] || options[:presence_penalty]
         }
       end
 

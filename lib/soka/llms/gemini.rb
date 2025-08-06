@@ -20,8 +20,7 @@ module Soka
         {
           temperature: 0.7,
           top_p: 1.0,
-          top_k: 1,
-          max_output_tokens: 2048
+          top_k: 1
         }
       end
 
@@ -49,8 +48,7 @@ module Soka
           generationConfig: {
             temperature: params[:temperature] || options[:temperature],
             topP: params[:top_p] || options[:top_p],
-            topK: params[:top_k] || options[:top_k],
-            maxOutputTokens: params[:max_output_tokens] || options[:max_output_tokens]
+            topK: params[:top_k] || options[:top_k]
           }
         }
       end
