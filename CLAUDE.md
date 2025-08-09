@@ -363,6 +363,17 @@ The `examples/` directory contains 10 comprehensive examples:
 - Document all public APIs
 - Keep README and CLAUDE.md updated
 
+### Problem Solving Approach (Important for AI Assistants)
+- **Always solve problems directly - never avoid issues or use incorrect workarounds**
+  - Face technical challenges head-on without shortcuts or workarounds
+  - Ensure solutions align with architecture design and best practices
+  - Avoid temporary patches; pursue fundamental solutions
+- **When facing difficult problems or needing more information, provide current status and issues, then pause for discussion before implementation**
+  - Analyze and explain the situation when encountering complex problems
+  - Clearly describe difficulties encountered and information needed
+  - Wait for confirmation and discussion before proceeding with implementation
+  - Maintain transparent communication without assuming or guessing requirements
+
 ## 🤝 Contributing
 
 [Contributing Guidelines]
