@@ -57,8 +57,7 @@ module Soka
           faraday.request :json
           faraday.response :json
           faraday.adapter Faraday.default_adapter
-          faraday.options.timeout = options[:timeout] || 30
-          faraday.options.open_timeout = options[:open_timeout] || 10
+          faraday.options.timeout = options[:timeout] || 60
         end
       end
 
