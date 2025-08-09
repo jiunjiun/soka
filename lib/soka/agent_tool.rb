@@ -5,6 +5,15 @@ module Soka
   class AgentTool
     include AgentTools::ParamsValidator
 
+    TYPE_MAPPING = {
+      'String' => 'string',
+      'Integer' => 'integer', 'Fixnum' => 'integer', 'Bignum' => 'integer',
+      'Float' => 'number', 'Numeric' => 'number',
+      'TrueClass' => 'boolean', 'FalseClass' => 'boolean', 'Boolean' => 'boolean',
+      'Array' => 'array',
+      'Hash' => 'object', 'Object' => 'object'
+    }.freeze
+
     # Handles parameter definitions for tools
     class ParamsDefinition
       attr_reader :required_params, :optional_params, :validations
@@ -109,22 +118,7 @@ module Soka
       end
 
       def type_to_json_type(ruby_type)
-        type_mapping[ruby_type.to_s] || 'string'
-      end
-
-      def type_mapping
-        @type_mapping ||= build_type_mapping
-      end
-
-      def build_type_mapping
-        {
-          'String' => 'string',
-          'Integer' => 'integer', 'Fixnum' => 'integer', 'Bignum' => 'integer',
-          'Float' => 'number', 'Numeric' => 'number',
-          'TrueClass' => 'boolean', 'FalseClass' => 'boolean', 'Boolean' => 'boolean',
-          'Array' => 'array',
-          'Hash' => 'object', 'Object' => 'object'
-        }.freeze
+        TYPE_MAPPING[ruby_type.to_s] || 'string'
       end
     end
 
