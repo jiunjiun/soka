@@ -197,7 +197,7 @@ RSpec.describe Soka::Result do
     it 'converts to JSON string' do
       result = create_json_result
       json = result.to_json
-      parsed = JSON.parse(json)
+      parsed = Oj.load(json)
       expect_valid_json(parsed)
     end
 

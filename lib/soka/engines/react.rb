@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'json'
-
 module Soka
   module Engines
     # ReAct (Reasoning and Acting) engine implementation

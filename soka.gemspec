@@ -33,5 +33,6 @@ Gem::Specification.new do |spec|
 
   # Runtime dependencies
   spec.add_dependency 'faraday', '~> 2.0'
+  spec.add_dependency 'oj', '~> 3.16'
   spec.add_dependency 'zeitwerk', '~> 2.6'
 end

@@ -2,6 +2,7 @@
 
 require 'zeitwerk'
 require 'faraday'
+require 'oj'
 
 # Main module for the Soka ReAct Agent Framework
 # Provides AI agent capabilities with multiple LLM providers support

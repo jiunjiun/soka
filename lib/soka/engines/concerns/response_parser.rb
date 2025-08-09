@@ -34,12 +34,12 @@ module Soka
         # @return [Hash, nil] The parsed action with tool and params
         def parse_action_block(content)
           content = content.strip
-          action_json = JSON.parse(content, symbolize_names: true)
+          action_json = Oj.load(content, symbol_keys: true)
 
           return nil unless action_json[:tool]
 
           { tool: action_json[:tool], params: action_json[:parameters] || {} }
-        rescue JSON::ParserError
+        rescue Oj::ParseError
           nil
         end
       end
