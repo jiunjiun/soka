@@ -74,8 +74,7 @@ RSpec.describe Soka::Engines::React do
         Soka::LLMs::Result.new(content: <<~RESPONSE)
           <Thought>This is a simple math question. I need to calculate 2+2.</Thought>
           <Action>
-          Tool: calculator
-          Parameters: {"expression": "2+2"}
+          {"tool": "calculator", "parameters": {"expression": "2+2"}}
           </Action>
         RESPONSE
       end
@@ -141,8 +140,7 @@ RSpec.describe Soka::Engines::React do
         Soka::LLMs::Result.new(content: <<~STEP1)
           <Thought>I need to search for information first.</Thought>
           <Action>
-          Tool: search
-          Parameters: {"query": "complex topic"}
+          {"tool": "search", "parameters": {"query": "complex topic"}}
           </Action>
         STEP1
       end
@@ -182,8 +180,7 @@ RSpec.describe Soka::Engines::React do
         Soka::LLMs::Result.new(content: <<~THINKING)
           <Thought>I'm still thinking about this...</Thought>
           <Action>
-          Tool: search
-          Parameters: {"query": "more info"}
+          {"tool": "search", "parameters": {"query": "more info"}}
           </Action>
         THINKING
       end
@@ -224,8 +221,7 @@ RSpec.describe Soka::Engines::React do
         Soka::LLMs::Result.new(content: <<~CALC)
           <Thought>I need to multiply 10 by 5.</Thought>
           <Action>
-          Tool: calculator
-          Parameters: {"expression": "10 * 5"}
+          {"tool": "calculator", "parameters": {"expression": "10 * 5"}}
           </Action>
         CALC
       end
@@ -258,8 +254,7 @@ RSpec.describe Soka::Engines::React do
         Soka::LLMs::Result.new(content: <<~ERROR)
           <Thought>Let me calculate this.</Thought>
           <Action>
-          Tool: calculator
-          Parameters: {"expression": "1/0"}
+          {"tool": "calculator", "parameters": {"expression": "1/0"}}
           </Action>
         ERROR
       end
@@ -299,8 +294,7 @@ RSpec.describe Soka::Engines::React do
         Soka::LLMs::Result.new(content: <<~INVALID)
           <Thought>I'll use a special tool.</Thought>
           <Action>
-          Tool: unknown_tool
-          Parameters: {}
+          {"tool": "unknown_tool", "parameters": {}}
           </Action>
         INVALID
       end
@@ -351,8 +345,7 @@ RSpec.describe Soka::Engines::React do
         Soka::LLMs::Result.new(content: <<~ITER)
           <Thought>Still thinking...</Thought>
           <Action>
-          Tool: search
-          Parameters: {"query": "more info"}
+          {"tool": "search", "parameters": {"query": "more info"}}
           </Action>
         ITER
       end

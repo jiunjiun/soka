@@ -445,8 +445,7 @@ Soka uses a tagged ReAct format:
 ```xml
 <Thought>I need to search for weather information in Tokyo</Thought>
 <Action>
-Tool: search
-Parameters: {"query": "Tokyo weather", "location": "Japan"}
+{"tool": "search", "parameters": {"query": "Tokyo weather", "location": "Japan"}}
 </Action>
 <Observation>Tokyo today: Sunny, temperature 28°C, humidity 65%</Observation>
 <Thought>I have obtained the weather information and can answer the user now</Thought>
@@ -795,7 +794,7 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 ## Acknowledgments
 
 - Thanks to the [ReAct paper](https://arxiv.org/abs/2210.03629) for the theoretical foundation
-- Thanks to the [Regent](https://github.com/alextwoods/regent) project for architectural inspiration
+- Thanks to the [Regent](https://github.com/alchaplinsky/regent) project for architectural inspiration
 - Thanks to all contributors for their efforts
 
 ---

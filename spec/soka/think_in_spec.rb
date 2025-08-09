@@ -179,7 +179,7 @@ RSpec.describe 'Think In Languages Feature', type: :feature do
         allow(Soka::LLM).to receive(:new).and_return(mock_llm)
         allow(mock_llm).to receive(:chat).and_return(
           create_mock_llm_result(
-            '<Thought>Thinking in Italian</Thought><Action>\nTool: dummy_tool\nParameters: {}\n</Action>'
+            '<Thought>Thinking in Italian</Thought><Action>{"tool": "dummy_tool", "parameters": {}}</Action>'
           ),
           create_mock_llm_result('<Final_Answer>Fatto!</Final_Answer>')
         )

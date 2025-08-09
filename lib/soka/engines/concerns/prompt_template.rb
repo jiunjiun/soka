@@ -52,8 +52,7 @@ module Soka
 
             <Thought>Your reasoning about what to do next</Thought>
             <Action>
-            Tool: tool_name
-            Parameters: {"param1": "value1", "param2": "value2"}
+            {"tool": "tool_name", "parameters": {"param1": "value1", "param2": "value2"}}
             </Action>
 
             #{action_format_rules}
@@ -83,11 +82,12 @@ module Soka
             Important rules:
             1. Always start with a <Thought> to analyze the problem
             2. Use tools when you need information or to perform actions
-            3. Parameters MUST be valid JSON format (e.g., {"query": "weather"} not {query: "weather"})
-            4. For tools without parameters, use empty JSON object: {}
-            5. NEVER include <Observation> tags - wait for the system to provide them
-            6. Provide a clear and complete <Final_Answer> when done
-            7. If you cannot complete the task, explain why in the <Final_Answer>
+            3. The <Action> content MUST be a single line of valid JSON
+            4. Action format: {"tool": "tool_name", "parameters": {...}}
+            5. For tools without parameters, use: {"tool": "tool_name", "parameters": {}}
+            6. NEVER include <Observation> tags - wait for the system to provide them
+            7. Provide a clear and complete <Final_Answer> when done
+            8. If you cannot complete the task, explain why in the <Final_Answer>
           RULES
         end
 

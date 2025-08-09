@@ -350,8 +350,7 @@ RSpec.describe Soka::Agent do
         Soka::LLMs::Result.new(content: <<~RESPONSE)
           <Thought>Processing request</Thought>
           <Action>
-          Tool: test_tool
-          Parameters: {"query": "test"}
+          {"tool": "test_tool", "parameters": {"query": "test"}}
           </Action>
         RESPONSE
       end

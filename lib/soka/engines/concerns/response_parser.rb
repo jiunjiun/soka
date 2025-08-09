@@ -29,30 +29,18 @@ module Soka
           action_blocks.filter_map { |block| parse_action_block(block[0]) }
         end
 
+        # Parse action block from LLM response in JSON format
+        # @param content [String] The action block content containing JSON
+        # @return [Hash, nil] The parsed action with tool and params
         def parse_action_block(content)
           content = content.strip
-          tool_match = content.match(/Tool:\s*(.+)/)
-          params_match = content.match(/Parameters:\s*(.+)/m)
+          action_json = JSON.parse(content, symbolize_names: true)
 
-          return unless tool_match && params_match
+          return nil unless action_json[:tool]
 
-          tool_name = tool_match[1].strip
-          params_json = params_match[1].strip
-          params = parse_json_params(params_json)
-
-          { tool: tool_name, params: params }
-        end
-
-        # Parse JSON parameters from action block
-        # @param params_json [String] The JSON string to parse
-        # @return [Hash] The parsed parameters as a hash with symbol keys
-        def parse_json_params(params_json)
-          # Clean up the JSON string - remove any trailing commas or whitespace
-          cleaned_json = params_json.strip.gsub(/,\s*}/, '}').gsub(/,\s*\]/, ']')
-          JSON.parse(cleaned_json, symbolize_names: true)
+          { tool: action_json[:tool], params: action_json[:parameters] || {} }
         rescue JSON::ParserError
-          # Return empty hash to continue when JSON parsing fails
-          {}
+          nil
         end
       end
     end
