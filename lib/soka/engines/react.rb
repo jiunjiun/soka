@@ -8,6 +8,7 @@ module Soka
       include Concerns::PromptTemplate
       include Concerns::ResponseParser
       include Concerns::ResultBuilder
+      include Concerns::FormatHelpers
 
       ReasonResult = Struct.new(:input, :thoughts, :final_answer, :status, :error,
                                 keyword_init: true) do
