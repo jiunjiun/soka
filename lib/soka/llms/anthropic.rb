@@ -6,27 +6,6 @@ module Soka
     class Anthropic < Base
       ENV_KEY = 'ANTHROPIC_API_KEY'
 
-      private
-
-      def default_model
-        'claude-sonnet-4-0'
-      end
-
-      def base_url
-        'https://api.anthropic.com'
-      end
-
-      def default_options
-        {
-          temperature: 0.7,
-          top_p: 1.0,
-          top_k: 1,
-          anthropic_version: '2023-06-01'
-        }
-      end
-
-      public
-
       def chat(messages, **params)
         request_params = build_request_params(messages, params)
 
@@ -44,6 +23,24 @@ module Soka
 
       private
 
+      def default_model
+        'claude-sonnet-4-0'
+      end
+
+      def base_url
+        'https://api.anthropic.com'
+      end
+
+      def default_options
+        {
+          temperature: 0.7,
+          top_p: 1.0,
+          top_k: 1,
+          anthropic_version: '2023-06-01',
+          max_tokens: 2048
+        }
+      end
+
       def build_request_params(messages, params)
         formatted_messages, system_prompt = extract_system_prompt(messages)
         request = build_base_request(formatted_messages, params)
@@ -57,7 +54,8 @@ module Soka
           messages: formatted_messages,
           temperature: params[:temperature] || options[:temperature],
           top_p: params[:top_p] || options[:top_p],
-          top_k: params[:top_k] || options[:top_k]
+          top_k: params[:top_k] || options[:top_k],
+          max_tokens: params[:max_tokens] || options[:max_tokens]
         }
       end
 
