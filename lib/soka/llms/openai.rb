@@ -6,32 +6,11 @@ module Soka
     class OpenAI < Base
       ENV_KEY = 'OPENAI_API_KEY'
 
-      private
-
-      def default_model
-        'gpt-4.1-mini'
-      end
-
-      def base_url
-        'https://api.openai.com'
-      end
-
-      def default_options
-        {
-          temperature: 0.7,
-          top_p: 1.0,
-          frequency_penalty: 0,
-          presence_penalty: 0
-        }
-      end
-
-      public
-
       def chat(messages, **params)
         request_params = build_request_params(messages, params)
 
         response = connection.post do |req|
-          req.url '/v1/chat/completions'
+          req.url '/v1/responses'
           req.headers['Authorization'] = "Bearer #{api_key}"
           req.body = request_params
         end
@@ -43,15 +22,35 @@ module Soka
 
       private
 
+      def default_model
+        'gpt-5-nano'
+      end
+
+      def base_url
+        'https://api.openai.com'
+      end
+
       def build_request_params(messages, params)
-        {
+        request_params = {
           model: model,
-          messages: messages,
-          temperature: params[:temperature] || options[:temperature],
-          top_p: params[:top_p] || options[:top_p],
-          frequency_penalty: params[:frequency_penalty] || options[:frequency_penalty],
-          presence_penalty: params[:presence_penalty] || options[:presence_penalty]
+          input: messages
         }
+
+        # Add max_output_tokens if provided (Responses API uses max_output_tokens)
+        request_params[:max_output_tokens] = params[:max_tokens] if params[:max_tokens]
+        add_reasoning_effort(request_params)
+
+        request_params
+      end
+
+      def add_reasoning_effort(request_params)
+        return unless allowed_reasoning_prefix_models?
+
+        request_params[:reasoning] = { effort: 'minimal', summary: 'auto' }
+      end
+
+      def allowed_reasoning_prefix_models?
+        model.start_with?('gpt-5') && !model.start_with?('gpt-5-chat-latest')
       end
 
       def parse_response(response)
@@ -68,17 +67,26 @@ module Soka
       end
 
       def build_result_from_response(body)
-        choice = body.dig('choices', 0)
-        message = choice['message']
+        # Extract text from the Responses API format
+        output_text = extract_output_text(body['output'])
+
+        # Get the status to determine finish reason
+        finish_reason = body['status'] == 'completed' ? 'stop' : body['status']
 
         Result.new(
           model: body['model'],
-          content: message['content'],
-          input_tokens: body.dig('usage', 'prompt_tokens'),
-          output_tokens: body.dig('usage', 'completion_tokens'),
-          finish_reason: choice['finish_reason'],
+          content: output_text,
+          input_tokens: body.dig('usage', 'input_tokens'),
+          output_tokens: body.dig('usage', 'output_tokens'),
+          finish_reason: finish_reason,
           raw_response: body
         )
+      end
+
+      def extract_output_text(output_items)
+        message = output_items.find { |item| item['type'] == 'message' }
+        content = message['content'].find { |content| content['type'] == 'output_text' }
+        content['text']
       end
     end
   end
