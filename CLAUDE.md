@@ -352,6 +352,13 @@ The `examples/` directory contains 10 comprehensive examples:
   - Remove duplicate code
   - Avoid over-abstraction
 
+### Ruby Code Organization (Important for AI Assistants)
+- **Always organize Ruby class methods with public methods first, then private methods**
+  - Place all public methods at the beginning of the class
+  - Place all private methods at the end after a single `private` keyword
+  - Never mix public and private sections
+  - Avoid using `public` keyword explicitly unless switching back from private
+
 ### Code Documentation
 - **When adjusting code, add comments and documentation to methods**
   - Use YARD format comments
