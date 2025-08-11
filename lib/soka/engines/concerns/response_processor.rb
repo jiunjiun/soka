@@ -91,12 +91,21 @@ module Soka
           context.add_message(role: 'assistant', content: content)
           context.add_message(
             role: 'user',
-            content: 'Please follow the exact format with <Thought>, <Action>, and <Final_Answer> tags.'
+            content: format_reminder
           )
         end
 
         def format_observation(observation)
           "<Observation>#{observation}</Observation>"
+        end
+
+        def format_reminder
+          # Strict mode (default)
+          'CRITICAL: Only responses with proper <Thought>, <Action>, and <Final_Answer> tags will be processed. ' \
+            'Other formats will fail.'
+          # Normal mode (alternative)
+          # 'Structure your response using these required tags: <Thought> for reasoning, ' \
+          #   '<Action> for tool usage, and <Final_Answer> for conclusions.'
         end
       end
     end
