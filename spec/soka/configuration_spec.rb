@@ -22,7 +22,6 @@ RSpec.describe Soka::Configuration do
 
     def expect_performance_defaults(perf_config)
       expect(perf_config.max_iterations).to eq(10)
-      expect(perf_config.timeout).to eq(30)
     end
   end
 

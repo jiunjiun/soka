@@ -17,7 +17,6 @@ module Soka
     # @param engine [Class] The engine class to use (defaults to Engine::React)
     # @param options [Hash] Configuration options
     # @option options [Integer] :max_iterations Maximum iterations for reasoning
-    # @option options [Integer] :timeout Timeout in seconds for operations
     # @option options [Symbol] :provider LLM provider override
     # @option options [String] :model LLM model override
     # @option options [String] :api_key LLM API key override
@@ -44,8 +43,9 @@ module Soka
     # Apply performance-related configuration
     # @param options [Hash] Configuration options
     def apply_performance_config(options)
-      @max_iterations = options.fetch(:max_iterations) { self.class._max_iterations } || 10
-      @timeout = options.fetch(:timeout) { self.class._timeout } || 30
+      @max_iterations = options.fetch(:max_iterations) do
+        self.class._max_iterations || Soka.configuration.performance.max_iterations
+      end
     end
 
     # Apply behavior-related configuration

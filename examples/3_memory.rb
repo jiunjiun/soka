@@ -17,7 +17,6 @@ Soka.setup do |config|
 
   config.performance do |perf|
     perf.max_iterations = 10
-    perf.timeout = 30
   end
 end
 

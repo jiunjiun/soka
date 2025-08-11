@@ -175,7 +175,6 @@ Soka.setup do |config|
   # Performance Configuration
   config.performance do |perf|
     perf.max_iterations = 10      # ReAct max iterations
-    perf.timeout = 30             # API call timeout (seconds)
   end
 
   # Default tools
@@ -226,7 +225,6 @@ class WeatherAgent < Soka::Agent
   provider :gemini
   model 'gemini-2.5-flash-lite'
   max_iterations 10
-  timeout 30
 
   # Register tools
   tool SearchTool
@@ -314,7 +312,7 @@ result = agent.run('What is the weather in Tokyo today?')
 # Result object provides rich information
 puts result.final_answer      # Final answer
 puts result.iterations       # Number of iterations used
-puts result.status          # :success, :failed, :timeout, :max_iterations_reached
+puts result.status          # :success, :failed, :max_iterations_reached
 puts result.execution_time  # Execution time (if recorded)
 
 # Check execution status
@@ -322,8 +320,6 @@ if result.successful?
   puts "Success: #{result.final_answer}"
 elsif result.failed?
   puts "Failed: #{result.error}"
-elsif result.timeout?
-  puts "Execution timeout"
 elsif result.max_iterations_reached?
   puts "Max iterations reached"
 end
@@ -459,7 +455,7 @@ Soka uses a tagged ReAct format:
 result.input            # User input
 result.thoughts         # Array of thinking steps
 result.final_answer     # Final answer
-result.status          # Status (:success, :failed, :timeout, :max_iterations_reached)
+result.status          # Status (:success, :failed, :max_iterations_reached)
 result.error           # Error message (if any)
 result.execution_time  # Execution time (seconds)
 result.iterations      # Number of iterations
@@ -476,7 +472,7 @@ result.iterations      # Number of iterations
     }
   ],
   final_answer: "Final answer",
-  status: :success,        # :success, :failed, :timeout, :max_iterations_reached
+  status: :success,        # :success, :failed, :max_iterations_reached
   error: nil,             # Error message (if any)
   execution_time: 1.23,   # Execution time (seconds)
   iterations: 2,          # Number of iterations
@@ -681,7 +677,6 @@ ruby examples/1_basic.rb
 | `ai.instructions` | String | nil | Custom agent instructions |
 | `ai.think_in` | String | `"en"` | Thinking language |
 | `performance.max_iterations` | Integer | 10 | Max iterations |
-| `performance.timeout` | Integer | 30 | Timeout (seconds) |
 
 ### Tool Parameter Validation
 
@@ -714,13 +709,7 @@ ruby examples/1_basic.rb
    ```
    Solution: Ensure correct environment variable is set or provide API key in configuration
 
-2. **Timeout Error**
-   ```
-   Soka::LLMError: Request timed out
-   ```
-   Solution: Increase timeout or use a faster model
-
-3. **Max Iterations Reached**
+2. **Max Iterations Reached**
    ```
    Status: max_iterations_reached
    ```

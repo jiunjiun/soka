@@ -5,7 +5,7 @@ module Soka
   class Configuration
     # AI provider configuration
     class AIConfig
-      attr_accessor :provider, :model, :api_key, :fallback_provider, :fallback_model, :fallback_api_key
+      attr_accessor :provider, :model, :api_key
 
       def initialize
         @provider = :gemini
@@ -15,11 +15,10 @@ module Soka
 
     # Performance-related configuration
     class PerformanceConfig
-      attr_accessor :max_iterations, :timeout
+      attr_accessor :max_iterations
 
       def initialize
         @max_iterations = 10
-        @timeout = 30
       end
     end
 

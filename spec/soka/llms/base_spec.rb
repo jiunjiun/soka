@@ -65,7 +65,7 @@ RSpec.describe Soka::LLMs::Base do
     context 'with options' do
       it 'merges provided options with defaults' do
         llm_class_with_defaults = create_llm_class_with_defaults
-        llm = llm_class_with_defaults.new(api_key: 'key', timeout: 60)
+        llm = llm_class_with_defaults.new(api_key: 'key', max_retries: 5)
 
         expect_merged_options(llm)
       end
@@ -73,15 +73,15 @@ RSpec.describe Soka::LLMs::Base do
       def create_llm_class_with_defaults
         Class.new(test_llm_class) do
           def default_options
-            { timeout: 30, max_retries: 3 }
+            { max_retries: 3, custom_option: 'value' }
           end
         end
       end
 
       def expect_merged_options(llm)
         aggregate_failures do
-          expect(llm.options[:timeout]).to eq(60)
-          expect(llm.options[:max_retries]).to eq(3)
+          expect(llm.options[:max_retries]).to eq(5)
+          expect(llm.options[:custom_option]).to eq('value')
         end
       end
     end
@@ -214,13 +214,6 @@ RSpec.describe Soka::LLMs::Base do
 
   describe '#handle_error' do
     let(:llm) { test_llm_class.new(api_key: 'key') }
-
-    it 'handles timeout errors' do
-      error = Faraday::TimeoutError.new('timeout')
-      expect do
-        llm.send(:handle_error, error)
-      end.to raise_error(Soka::LLMError, 'Request timed out')
-    end
 
     it 'handles connection failures' do
       error = Faraday::ConnectionFailed.new('failed')

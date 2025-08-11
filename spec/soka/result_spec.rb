@@ -74,7 +74,6 @@ RSpec.describe Soka::Result do
 
       it 'returns false for other statuses' do
         expect_not_successful(:failed)
-        expect_not_successful(:timeout)
         expect_not_successful(:pending)
       end
 
@@ -93,18 +92,6 @@ RSpec.describe Soka::Result do
       it 'returns false for other statuses' do
         result = described_class.new(status: :success)
         expect(result).not_to be_failed
-      end
-    end
-
-    describe '#timeout?' do
-      it 'returns true for timeout status' do
-        result = described_class.new(status: :timeout)
-        expect(result).to be_timeout
-      end
-
-      it 'returns false for other statuses' do
-        result = described_class.new(status: :success)
-        expect(result).not_to be_timeout
       end
     end
 
@@ -244,11 +231,6 @@ RSpec.describe Soka::Result do
         status: :failed,
         error: 'Network error'
       )
-    end
-
-    it 'returns timeout message' do
-      result = described_class.new(status: :timeout)
-      expect(result.summary).to eq('Timeout: Execution exceeded time limit')
     end
 
     it 'returns max iterations message' do

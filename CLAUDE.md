@@ -65,7 +65,6 @@ class MyAgent < Soka::Agent
   provider :gemini              # Choose AI provider
   model 'gemini-2.5-flash-lite' # Specify model
   max_iterations 10              # Limit reasoning cycles
-  timeout 30                     # Request timeout
 
   # Define tools
   tool :my_tool, 'Description' do
@@ -256,7 +255,6 @@ Soka.setup do |config|
 
   config.performance do |perf|
     perf.max_iterations = 10
-    perf.timeout = 30
   end
 end
 ```
@@ -274,7 +272,6 @@ ANTHROPIC_API_KEY=your_api_key
 
 ### Performance Tips
 - Set appropriate `max_iterations` to prevent infinite loops
-- Use `timeout` to handle slow API responses
 - Implement caching for frequently used tools
 - Consider memory limits for long conversations
 

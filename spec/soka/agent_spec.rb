@@ -276,15 +276,13 @@ RSpec.describe Soka::Agent do
 
     def create_agent_with_options
       test_agent_class.new(
-        max_iterations: 20,
-        timeout: 120
+        max_iterations: 20
       )
     end
 
     def expect_custom_configuration(agent)
       aggregate_failures do
         expect(agent.instance_variable_get(:@max_iterations)).to eq(20)
-        expect(agent.instance_variable_get(:@timeout)).to eq(120)
       end
     end
 

@@ -37,12 +37,6 @@ module Soka
       status == :failed
     end
 
-    # Check if the result timed out
-    # @return [Boolean]
-    def timeout?
-      status == :timeout
-    end
-
     # Check if max iterations were reached
     # @return [Boolean]
     def max_iterations_reached?
@@ -117,7 +111,6 @@ module Soka
       {
         success: "Success: #{truncate(final_answer)}",
         failed: "Failed: #{error}",
-        timeout: 'Timeout: Execution exceeded time limit',
         max_iterations_reached: "Max iterations reached: #{iterations} iterations"
       }
     end

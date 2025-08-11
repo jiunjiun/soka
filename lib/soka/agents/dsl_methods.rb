@@ -10,7 +10,7 @@ module Soka
 
       # Class methods for DSL
       module ClassMethods
-        attr_accessor :_provider, :_model, :_api_key, :_max_iterations, :_timeout, :_tools, :_retry_config, :_hooks,
+        attr_accessor :_provider, :_model, :_api_key, :_max_iterations, :_tools, :_retry_config, :_hooks,
                       :_instructions, :_think_in
 
         def inherited(subclass)
@@ -42,12 +42,6 @@ module Soka
         # @param num [Integer] The maximum number of iterations
         def max_iterations(num)
           @_max_iterations = num
-        end
-
-        # Define timeout for the agent
-        # @param duration [Integer] The timeout duration in seconds
-        def timeout(duration)
-          @_timeout = duration
         end
 
         # Define custom instructions (system prompt) for the agent
