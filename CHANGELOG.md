@@ -7,6 +7,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.6] - 2025-08-12
+
+### Features
+- feat: add OpenAI Responses API support with reasoning (8c81be8)
+- feat: enhance ReAct prompt template with clearer instructions (d371c12)
+- feat(gemini): add thinkingConfig to generationConfig (8e44e63)
+
+### Bug Fixes
+- fix(openai): update default model name from gpt-5-nano to gpt-5-mini (1e5971f)
+- fix: update Final_Answer tag to FinalAnswer across codebase (feb6071)
+
+### Documentation
+- docs: add model testing results and update OpenAI model names (f83b987)
+- docs: add problem solving guidelines for AI assistants (0e99e5f)
+
+### Code Refactoring
+- refactor: reorganize prompt templates into modular structure (0c10e21)
+- refactor: improve format reminder in response processor (a3de6a5)
+- refactor: remove configurable timeout option (7e7e7c3)
+- refactor: reorganize Anthropic LLM class structure (4fc4f90)
+- refactor: extract format helpers from prompt template (d371c12)
+- refactor: simplify AgentTool type mapping with constant (c609949)
+- refactor: standardize Action tag to use single-line JSON format (5ac06f0)
+- refactor(context): simplify iteration handling and improve logging (3e65643)
+- refactor(llms): remove max_tokens parameter from configurations (d7a1fc8)
+
+### Performance
+- perf: replace standard JSON parser with Oj for better performance (3fc969f)
+
+### Chores
+- chore: update gitignore and documentation (8dc5102)
+- chore: adjust HTTP client timeout settings (38f47a7)
+- chore: update .gitignore to include .serena (90e3d41)
+
 ## [0.0.5] - 2025-08-05
 
 ### Bug Fixes
