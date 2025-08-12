@@ -4,11 +4,10 @@ module Soka
   module Engines
     # ReAct (Reasoning and Acting) engine implementation
     class React < Base
+      include Prompts
       include Concerns::ResponseProcessor
-      include Concerns::PromptTemplate
       include Concerns::ResponseParser
       include Concerns::ResultBuilder
-      include Concerns::FormatHelpers
 
       ReasonResult = Struct.new(:input, :thoughts, :final_answer, :status, :error,
                                 keyword_init: true) do

@@ -81,7 +81,7 @@ RSpec.describe Soka::Engines::React do
 
       def create_final_answer_response
         Soka::LLMs::Result.new(content: <<~RESPONSE)
-          <Final_Answer>The answer to 2+2 is 4.</Final_Answer>
+          <FinalAnswer>The answer to 2+2 is 4.</FinalAnswer>
         RESPONSE
       end
 
@@ -149,7 +149,7 @@ RSpec.describe Soka::Engines::React do
         Soka::LLMs::Result.new(content: <<~STEP2)
           <Observation>Results for: complex topic</Observation>
           <Thought>Now I have the information I need.</Thought>
-          <Final_Answer>Based on my research, here's the answer.</Final_Answer>
+          <FinalAnswer>Based on my research, here's the answer.</FinalAnswer>
         STEP2
       end
 
@@ -229,7 +229,7 @@ RSpec.describe Soka::Engines::React do
       def create_calc_result_response
         Soka::LLMs::Result.new(content: <<~RESULT)
           <Observation>50</Observation>
-          <Final_Answer>10 * 5 = 50</Final_Answer>
+          <FinalAnswer>10 * 5 = 50</FinalAnswer>
         RESULT
       end
 
@@ -262,7 +262,7 @@ RSpec.describe Soka::Engines::React do
       def create_error_recovery
         Soka::LLMs::Result.new(content: <<~RECOVER)
           <Thought>The calculation failed due to division by zero.</Thought>
-          <Final_Answer>Cannot divide by zero.</Final_Answer>
+          <FinalAnswer>Cannot divide by zero.</FinalAnswer>
         RECOVER
       end
 
@@ -301,7 +301,7 @@ RSpec.describe Soka::Engines::React do
 
       def create_tool_recovery
         Soka::LLMs::Result.new(content: <<~RECOVERY)
-          <Final_Answer>I cannot use that tool as it doesn't exist.</Final_Answer>
+          <FinalAnswer>I cannot use that tool as it doesn't exist.</FinalAnswer>
         RECOVERY
       end
 
@@ -327,7 +327,7 @@ RSpec.describe Soka::Engines::React do
         responses = [
           Soka::LLMs::Result.new(content: 'en'),  # Language detection
           Soka::LLMs::Result.new(content: 'Just a plain response without tags'),
-          Soka::LLMs::Result.new(content: '<Final_Answer>Fallback answer</Final_Answer>')
+          Soka::LLMs::Result.new(content: '<FinalAnswer>Fallback answer</FinalAnswer>')
         ]
         allow(llm).to receive(:chat).and_return(*responses)
       end
@@ -354,7 +354,7 @@ RSpec.describe Soka::Engines::React do
     def create_final_response
       Soka::LLMs::Result.new(content: <<~FINAL)
         <Observation>Found something</Observation>
-        <Final_Answer>Finally, the answer</Final_Answer>
+        <FinalAnswer>Finally, the answer</FinalAnswer>
       FINAL
     end
 
@@ -375,7 +375,7 @@ RSpec.describe Soka::Engines::React do
             Soka::LLMs::Result.new(content: 'en')
           else
             messages_sent.replace(messages)
-            Soka::LLMs::Result.new(content: '<Final_Answer>Test response</Final_Answer>')
+            Soka::LLMs::Result.new(content: '<FinalAnswer>Test response</FinalAnswer>')
           end
         end
       end
@@ -402,7 +402,7 @@ RSpec.describe Soka::Engines::React do
         engine_with_instructions.reason('Test query')
 
         system_message = messages_sent.find { |m| m[:role] == 'system' }
-        expect(system_message[:content]).to include('You must follow this exact format')
+        expect(system_message[:content]).to include('MANDATORY XML TAG STRUCTURE')
       end
 
       it 'uses default instructions without custom ones' do

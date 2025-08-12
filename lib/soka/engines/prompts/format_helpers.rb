@@ -2,7 +2,7 @@
 
 module Soka
   module Engines
-    module Concerns
+    module Prompts
       # Helper methods for formatting prompt components
       module FormatHelpers
         private
@@ -17,7 +17,7 @@ module Soka
             schema = tool.class.to_h
             params_desc = format_parameters(schema[:parameters])
 
-            "- #{schema[:name]}: #{schema[:description]}\n  Parameters: #{params_desc}"
+            "- #{schema[:name]}: #{schema[:description]}\n  Parameters: \n#{params_desc}"
           end.join("\n")
         end
 
@@ -32,10 +32,10 @@ module Soka
             type = config[:type]
             desc = config[:description]
 
-            "#{name} #{required} [#{type}] - #{desc}"
+            "    - #{name} #{required} [#{type}] - #{desc}"
           end
 
-          properties.join(', ')
+          properties.join("\n")
         end
       end
     end
