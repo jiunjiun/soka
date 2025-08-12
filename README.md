@@ -658,7 +658,7 @@ ruby examples/1_basic.rb
 - Default model: `gemini-2.5-flash-lite`
 
 #### OpenAI
-- Models: `gpt-4.1`, `gpt-4.1-mini`, `gpt-4.1-nano`
+- Models: `gpt-5`, `gpt-5-mini`, `gpt-5-nano`
 - Environment variable: `OPENAI_API_KEY`
 - Features: Streaming support, powerful reasoning
 
@@ -666,6 +666,24 @@ ruby examples/1_basic.rb
 - Models: `claude-opus-4-0`, `claude-sonnet-4-0`, `claude-3-5-haiku-latest`
 - Environment variable: `ANTHROPIC_API_KEY`
 - Features: Long context support, excellent code understanding
+
+### Model Testing Results
+
+Based on extensive testing with the Soka framework, here are the recommended models for optimal performance:
+
+| Provider | ✅ Recommended Models | ⚠️ Not Recommended | Notes |
+|----------|----------------------|-------------------|--------|
+| **Gemini** | `gemini-2.5-flash-lite` ⭐<br>`gemini-2.5-pro` | `gemini-2.5-flash` | **gemini-2.5-flash-lite**: Fast, cost-effective, with good performance<br>**Avoid gemini-2.5-flash**: Often skips thinking process when using tools, directly jumps to tool usage |
+| **OpenAI** | `gpt-5` <br>`gpt-5-mini` ⭐ | `gpt-5-nano` | **gpt-5-mini**: Good balance of price, speed, and effectiveness<br>**Avoid gpt-5-nano**: Can enter infinite tool-calling loops, fails to complete tasks |
+| **Claude** | *To be tested* | - | Testing in progress |
+
+⭐ = Best choice for most use cases
+
+#### Testing Insights
+
+- **Thinking Process**: Models marked as "Not Recommended" often fail to properly follow the ReAct pattern, either skipping the thinking phase or getting stuck in loops
+- **Cost-Performance**: `gemini-2.5-flash-lite` and `gpt-5-mini` offer the best balance for most applications
+- **Reliability**: Recommended models consistently complete tasks without entering error states
 
 ### Configuration Options
 
@@ -690,8 +708,8 @@ ruby examples/1_basic.rb
 ## Performance Optimization
 
 1. **Use appropriate models**:
-   - Simple tasks: `gemini-2.5-flash-lite` or `gpt-4.1-mini` or `claude-3-5-haiku-latest`
-   - Complex reasoning: `gemini-2.5-pro` or `gpt-4.1` or `claude-sonnet-4-0`
+   - Simple tasks: `gemini-2.5-flash-lite` or `gpt-5-mini` or `claude-3-5-haiku-latest`
+   - Complex reasoning: `gemini-2.5-pro` or `gpt-5` or `claude-sonnet-4-0`
 
 2. **Control iterations**:
    ```ruby
