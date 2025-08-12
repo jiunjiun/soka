@@ -445,7 +445,7 @@ Soka uses a tagged ReAct format:
 </Action>
 <Observation>Tokyo today: Sunny, temperature 28°C, humidity 65%</Observation>
 <Thought>I have obtained the weather information and can answer the user now</Thought>
-<Final_Answer>Today in Tokyo it's sunny with a temperature of 28°C and humidity of 65%.</Final_Answer>
+<FinalAnswer>Today in Tokyo it's sunny with a temperature of 28°C and humidity of 65%.</FinalAnswer>
 ```
 
 ### Result Object Structure

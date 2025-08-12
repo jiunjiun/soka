@@ -15,7 +15,7 @@ module Soka
           {
             thoughts: extract_tagged_content(text, 'Thought'),
             actions: extract_actions(text),
-            final_answer: extract_tagged_content(text, 'Final_Answer').first
+            final_answer: extract_tagged_content(text, 'FinalAnswer').first
           }
         end
 

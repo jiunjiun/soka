@@ -101,11 +101,11 @@ module Soka
 
         def format_reminder
           # Strict mode (default)
-          'CRITICAL: Only responses with proper <Thought>, <Action>, and <Final_Answer> tags will be processed. ' \
+          'CRITICAL: Only responses with proper <Thought>, <Action>, and <FinalAnswer> tags will be processed. ' \
             'Other formats will fail.'
           # Normal mode (alternative)
           # 'Structure your response using these required tags: <Thought> for reasoning, ' \
-          #   '<Action> for tool usage, and <Final_Answer> for conclusions.'
+          #   '<Action> for tool usage, and <FinalAnswer> for conclusions.'
         end
       end
     end

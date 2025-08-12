@@ -91,7 +91,7 @@ RSpec.describe 'Think In Languages Feature', type: :feature do
     let(:agent) { test_agent_class.new }
     let(:mock_llm) { instance_double(Soka::LLMs::Base) }
     let(:lang_response) { create_mock_llm_result('zh-TW') }
-    let(:main_response) { create_mock_llm_result('<Final_Answer>Done</Final_Answer>') }
+    let(:main_response) { create_mock_llm_result('<FinalAnswer>Done</FinalAnswer>') }
 
     before do
       allow(Soka::LLM).to receive(:new).and_return(mock_llm)
@@ -119,7 +119,7 @@ RSpec.describe 'Think In Languages Feature', type: :feature do
         allow(agent).to receive(:llm).and_return(mock_llm)
         # Should skip language detection and go straight to reasoning
         allow(mock_llm).to receive(:chat).and_return(
-          create_mock_llm_result('<Thought>Processing</Thought><Final_Answer>Done</Final_Answer>')
+          create_mock_llm_result('<Thought>Processing</Thought><FinalAnswer>Done</FinalAnswer>')
         )
       end
 
@@ -137,7 +137,7 @@ RSpec.describe 'Think In Languages Feature', type: :feature do
     before do
       allow(Soka::LLM).to receive(:new).and_return(mock_llm)
       allow(mock_llm).to receive(:chat).and_return(
-        create_mock_llm_result('<Thought>Testing</Thought><Final_Answer>Done</Final_Answer>')
+        create_mock_llm_result('<Thought>Testing</Thought><FinalAnswer>Done</FinalAnswer>')
       )
     end
 
@@ -149,7 +149,7 @@ RSpec.describe 'Think In Languages Feature', type: :feature do
 
     it 'omits language instruction when think_in not specified' do
       agent = test_agent_class.new
-      mock_response(agent, '<Final_Answer>Done</Final_Answer>')
+      mock_response(agent, '<FinalAnswer>Done</FinalAnswer>')
       result = agent.run('Test')
       expect(result.final_answer).to eq('Done')
     end
@@ -167,7 +167,7 @@ RSpec.describe 'Think In Languages Feature', type: :feature do
       mock_llm = instance_double(Soka::LLMs::Base)
       allow(Soka::LLM).to receive(:new).and_return(mock_llm)
       allow(mock_llm).to receive(:chat).and_return(
-        create_mock_llm_result('<Final_Answer>Completed</Final_Answer>')
+        create_mock_llm_result('<FinalAnswer>Completed</FinalAnswer>')
       )
     end
 
@@ -181,7 +181,7 @@ RSpec.describe 'Think In Languages Feature', type: :feature do
           create_mock_llm_result(
             '<Thought>Thinking in Italian</Thought><Action>{"tool": "dummy_tool", "parameters": {}}</Action>'
           ),
-          create_mock_llm_result('<Final_Answer>Fatto!</Final_Answer>')
+          create_mock_llm_result('<FinalAnswer>Fatto!</FinalAnswer>')
         )
       end
 

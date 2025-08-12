@@ -303,7 +303,7 @@ end
 ```ruby
 allow(agent).to receive(:llm).and_return(mock_llm)
 allow(mock_llm).to receive(:chat).and_return(
-  double(content: '<Thought>Test</Thought><Final_Answer>Done</Final_Answer>')
+  double(content: '<Thought>Test</Thought><FinalAnswer>Done</FinalAnswer>')
 )
 ```
 

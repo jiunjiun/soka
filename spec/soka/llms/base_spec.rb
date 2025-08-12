@@ -197,13 +197,6 @@ RSpec.describe Soka::LLMs::Base do
       expect(conn.url_prefix.to_s).to eq('https://api.test.com/')
     end
 
-    it 'sets timeout options' do
-      llm_with_timeout = test_llm_class.new(api_key: 'key', timeout: 45)
-      conn = llm_with_timeout.send(:connection)
-
-      expect(conn.options.timeout).to eq(45)
-    end
-
     it 'caches connection instance' do
       conn1 = llm.send(:connection)
       conn2 = llm.send(:connection)

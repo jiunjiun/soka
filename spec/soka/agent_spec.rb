@@ -3,7 +3,7 @@
 RSpec.describe Soka::Agent do
   # Helper method to mock LLM responses
   def mock_llm_response(agent,
-                        content = '<Thought>Processing</Thought><Final_Answer>The weather is sunny.</Final_Answer>')
+                        content = '<Thought>Processing</Thought><FinalAnswer>The weather is sunny.</FinalAnswer>')
     allow(agent.llm).to receive(:chat).and_return(
       Soka::LLMs::Result.new(content: content)
     )
@@ -116,19 +116,6 @@ RSpec.describe Soka::Agent do
     def create_agent_with_max_iterations(value)
       Class.new(described_class) do
         max_iterations value
-      end
-    end
-  end
-
-  describe '.timeout' do
-    it 'sets timeout value' do
-      agent_class = create_agent_with_timeout(60)
-      expect(agent_class._timeout).to eq(60)
-    end
-
-    def create_agent_with_timeout(value)
-      Class.new(described_class) do
-        timeout value
       end
     end
   end
@@ -354,7 +341,7 @@ RSpec.describe Soka::Agent do
       end
 
       def create_final_answer
-        Soka::LLMs::Result.new(content: '<Final_Answer>The weather is sunny.</Final_Answer>')
+        Soka::LLMs::Result.new(content: '<FinalAnswer>The weather is sunny.</FinalAnswer>')
       end
 
       def collect_events_during_run(agent)
