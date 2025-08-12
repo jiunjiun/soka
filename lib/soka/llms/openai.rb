@@ -23,7 +23,7 @@ module Soka
       private
 
       def default_model
-        'gpt-5-nano'
+        'gpt-5-mini'
       end
 
       def base_url
