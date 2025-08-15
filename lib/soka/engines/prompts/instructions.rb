@@ -41,7 +41,7 @@ module Soka
 
             1️⃣ THINKING PHASE (Required):
             <Thought>
-            MAXIMUM 30 WORDS - Be extremely concise!
+            MAXIMUM 20 WORDS - Be extremely concise!
             Use first-person perspective (I, me, my).
             NEVER mention: "LLM", "AI", "formatting for", "organizing for someone".
             NEVER say: "I will act as", "I will play the role of", "as an expert".

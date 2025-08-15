@@ -54,7 +54,7 @@ module Soka
           <<~STRUCTURE
             🔧 REACT FRAMEWORK STRUCTURE:
             You MUST use XML-style tags to structure your response. Each tag has a specific purpose:
-            - <Thought>: Your first-person reasoning (max 30 words)
+            - <Thought>: Your first-person reasoning (max 20 words)
             - <Action>: Tool invocation with JSON parameters
             - <Observation>: Tool results (provided by system)
             - <FinalAnswer>: Your complete solution (direct & concise)
