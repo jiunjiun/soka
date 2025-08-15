@@ -9,7 +9,7 @@ module Soka
       include Concerns::ResponseParser
       include Concerns::ResultBuilder
 
-      ReasonResult = Struct.new(:input, :thoughts, :final_answer, :status, :error,
+      ReasonResult = Struct.new(:input, :thoughts, :final_answer, :status, :error, :execution_time,
                                 keyword_init: true) do
         def successful?
           status == :success
@@ -21,12 +21,18 @@ module Soka
       # @yield [event] Optional block to handle events during execution
       # @return [ReasonResult] The result of the reasoning process
       def reason(task, &block)
+        start_time = Time.now
         context = ReasoningContext.new(task: task, event_handler: block, max_iterations: max_iterations,
                                        think_in: think_in)
         context.messages = build_messages(task)
 
         result = iterate_reasoning(context)
-        result || max_iterations_result(context)
+        result ||= max_iterations_result(context)
+
+        # Add execution time to the result
+        execution_time = Time.now - start_time
+        result.execution_time = execution_time if result.respond_to?(:execution_time=)
+        result
       end
 
       # Iterate through reasoning cycles

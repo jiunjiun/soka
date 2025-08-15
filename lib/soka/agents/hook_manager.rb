@@ -32,7 +32,8 @@ module Soka
           thoughts: engine_result.thoughts,
           final_answer: engine_result.final_answer,
           status: engine_result.status,
-          error: engine_result.error
+          error: engine_result.error,
+          execution_time: engine_result.execution_time
         )
       end
 
