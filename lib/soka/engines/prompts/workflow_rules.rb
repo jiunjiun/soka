@@ -56,7 +56,7 @@ module Soka
 
             2. 💭 THINKING PHASE:
                - Always start with <Thought>...</Thought>
-               - MAXIMUM 30 WORDS per thought
+               - MAXIMUM 20 WORDS per thought
                - Use first-person perspective (I, me, my)
                - AVOID: "LLM", "AI", "formatting for", "organizing for"
                - AVOID: "act as", "play role of", "as an expert", "I will be"

@@ -58,7 +58,7 @@ RSpec.describe Soka::Engines::Prompts do
     end
 
     it 'includes word limit instruction' do
-      expect(format).to include('MAXIMUM 30 WORDS')
+      expect(format).to include('MAXIMUM 20 WORDS')
     end
 
     it 'includes action phase section' do
@@ -86,7 +86,7 @@ RSpec.describe Soka::Engines::Prompts do
     end
 
     it 'specifies word limit for thoughts' do
-      expect(requirements).to include('MAXIMUM 30 WORDS per thought')
+      expect(requirements).to include('MAXIMUM 20 WORDS per thought')
     end
 
     it 'includes final answer section' do
