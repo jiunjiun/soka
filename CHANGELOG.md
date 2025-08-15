@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.7] - 2025-08-15
+
+### Features
+- feat: add execution time tracking to ReAct engine (eea5efb)
+
+### Code Refactoring
+- refactor: reduce thought tag word limit for better conciseness (7b3290c)
+
 ## [0.0.6] - 2025-08-12
 
 ### Features
